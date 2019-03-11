@@ -4,7 +4,8 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClientSecureBearSSL.h>
 
-const char* host = "https://www.peka.poznan.pl/vm/method.vm";
+// const char* host = "https://www.peka.poznan.pl/vm/method.vm";
+const char* host = "https://www.peka.poznan.pl/vm/";
 const char* fingerprintPeka = "BA:ED:B9:EB:E4:46:D3:16:49:40:34:DC:88:66:76:81:28:68:8B:1D";
 
 ESP8266WiFiMulti WiFiMulti;
@@ -86,8 +87,50 @@ void loop()
   delay(5000);
 }
 
-
 void connect() {
+  const uint8_t fingerprint[20] = {0x5A, 0xCF, 0xFE, 0xF0, 0xF1, 0xA6, 0xF4, 0x5F, 0xD2, 0x11, 0x11, 0xC6, 0x1D, 0x2F, 0x0E, 0xBC, 0x39, 0x8D, 0x50, 0xE0};
+  
+  if ((WiFiMulti.run() == WL_CONNECTED)) {
+
+    std::unique_ptr<BearSSL::WiFiClientSecure>client(new BearSSL::WiFiClientSecure);
+
+    client->setFingerprint(fingerprintPeka);
+
+    HTTPClient https;
+
+    Serial.print("[HTTPS] begin...\n");
+    if (https.begin(*client, host)) {  // HTTPS
+
+      Serial.print("[HTTPS] GET...\n");
+      // start connection and send HTTP header
+      int httpCode = https.GET();
+
+      // httpCode will be negative on error
+      if (httpCode > 0) {
+        // HTTP header has been send and Server response header has been handled
+        Serial.printf("[HTTPS] GET... code: %d\n", httpCode);
+
+        // file found at server
+        if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+          String payload = https.getString();
+          Serial.println(payload);
+        }
+      } else {
+        Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
+      }
+
+      https.end();
+    } else {
+      Serial.printf("[HTTPS] Unable to connect\n");
+    }
+  }
+
+  Serial.println("Wait 10s before next round...");
+  delay(10000);
+}
+
+
+void connect_4() {
   const uint8_t fingerprint[20] = {0x5A, 0xCF, 0xFE, 0xF0, 0xF1, 0xA6, 0xF4, 0x5F, 0xD2, 0x11, 0x11, 0xC6, 0x1D, 0x2F, 0x0E, 0xBC, 0x39, 0x8D, 0x50, 0xE0};
   
   if ((WiFiMulti.run() == WL_CONNECTED)) {
