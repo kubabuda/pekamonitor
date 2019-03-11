@@ -5,7 +5,7 @@
 #include <WiFiClientSecureBearSSL.h>
 
 const char* host = "https://www.peka.poznan.pl/vm/";
-const char* fingerprint = "BA:ED:B9:EB:E4:46:D3:16:49:40:34:DC:88:66:76:81:28:68:8B:1D";
+const uint8_t fingerprint[20] =  { 0xBA, 0xED, 0xB9, 0xEB, 0xE4, 0x46, 0xD3, 0x16, 0x49, 0x40, 0x34, 0xDC, 0x88, 0x66, 0x76, 0x81, 0x28, 0x68, 0x8B, 0x1D };
 const char* postEndpoint = "https://www.peka.poznan.pl/vm/method.vm";
 const char* postPayload = "method=getTimes&p0={'symbol':'SWRZ01'}";
 
@@ -96,6 +96,7 @@ void connect() {
     Serial.print("[HTTPS] begin...\n");
     if (https.begin(*client, postEndpoint)) {  // HTTPS
       https.addHeader("Content-Type", "application/x-www-form-urlencoded");
+      // https.setTimeout(100000);
 
       Serial.print("[HTTPS] POST...\n");
       // start connection and send HTTP header
