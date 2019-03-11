@@ -3,6 +3,9 @@
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClientSecureBearSSL.h>
+#include <Wire.h>    // Include Wire for using I2C
+#include <SFE_MicroOLED.h>  // Include the SFE_MicroOLED library
+
 
 const uint8_t fingerprint[20] =  { 0xBA, 0xED, 0xB9, 0xEB, 0xE4, 0x46, 0xD3, 0x16, 0x49, 0x40, 0x34, 0xDC, 0x88, 0x66, 0x76, 0x81, 0x28, 0x68, 0x8B, 0x1D };
 const char* postEndpoint = "https://www.peka.poznan.pl/vm/method.vm";
@@ -29,6 +32,21 @@ volatile bool wasPressed = false;
 // volatile int currentStop = 0;
 
 
+//////////////////////////
+// MicroOLED Definition //
+//////////////////////////
+//The library assumes a reset pin is necessary. The Qwiic OLED has RST hard-wired, so pick an arbitrarty IO pin that is not being used
+#define PIN_RESET 255  
+//The DC_JUMPER is the I2C Address Select jumper. Set to 1 if the jumper is open (Default), or set to 0 if it's closed.
+#define DC_JUMPER 0
+
+//////////////////////////////////
+// MicroOLED Object Declaration //
+//////////////////////////////////
+MicroOLED oled(PIN_RESET, DC_JUMPER);    // I2C declaration
+
+
+
 // methods declarations
 void handleKeyPress();
 void connect();
@@ -42,9 +60,15 @@ void setup()
   pinMode(buttonPin, INPUT); // TODO use internal pullup to omit ext resistor
   attachInterrupt(digitalPinToInterrupt(buttonPin), handleKeyPress, RISING);
 
-  // display.println("I could stick around");
-  // display.println("get along with you");
-  // display.println("hello.");
+  Wire.begin();
+  oled.begin();    // Initialize the OLED
+  oled.clear(ALL); // Clear the display's internal memory
+  oled.clear(PAGE); // Clear the buffer.
+  oled.println("I could");
+  oled.println("stick around");
+  oled.println("get along with you");
+  oled.println("hello.");
+  oled.display();
   
   Serial.printf("Connecting to %s ", ssid);
   Serial.print("Connecting to ");
