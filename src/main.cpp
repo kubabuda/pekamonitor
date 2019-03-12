@@ -19,18 +19,19 @@ const char* password = "***REMOVED***";
 const int buttonPin = D7;
 volatile bool wasPressed = false;
 
-// struct bus_stop {
-//   String symbol;
-//   String name;
-// } typedef bus_stop;
+struct bus_stop {
+  String symbol;
+  String name;
+} typedef bus_stop;
 
-// bus_stop stops[] = {
-//   { .symbol = "SWRZ01", .name = "Świerzawska->Ławica" },
-//   { .symbol = "SWRZ02", .name = "Świerzawska->Kaponiera" },
-//   { .symbol = "RYCE04", .name = "Rycerska->Kaponiera" },
-// };
-// int stopsCount = 2;
-// volatile int currentStop = 0;
+
+const int bollardsCount = 2;
+bus_stop bollards[bollardsCount + 1] = {
+  { .symbol = "SWRZ01", .name = "Świerzawska->Ławica" },
+  { .symbol = "SWRZ02", .name = "Świerzawska->Kaponiera" },
+  { .symbol = "RYCE04", .name = "Rycerska->Kaponiera" },
+};
+volatile int currentStop = 0;
 
 
 struct PEKA_bollard {
@@ -66,7 +67,7 @@ struct PEKA_response {
 
 
 // PEKA_response response;
-DynamicJsonDocument doc(2048); // should be enough
+DynamicJsonDocument response(2048); // should be enough
 
 
 //////////////////////////
@@ -76,12 +77,10 @@ DynamicJsonDocument doc(2048); // should be enough
 #define PIN_RESET 255  
 //The DC_JUMPER is the I2C Address Select jumper. Set to 1 if the jumper is open (Default), or set to 0 if it's closed.
 #define DC_JUMPER 0
-
 //////////////////////////////////
 // MicroOLED Object Declaration //
 //////////////////////////////////
 MicroOLED oled(PIN_RESET, DC_JUMPER);    // I2C declaration
-
 
 
 // methods declarations
@@ -155,44 +154,16 @@ void connect() {
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
           String payload = https.getString();
-          // Serial.println(payload);
 
-          // String json = "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
-          // Serial.println(json);
-          // // Deserialize the JSON document
-          // DeserializationError json_error = deserializeJson(doc, json);
-          // // Test if parsing succeeds.
-          // if (json_error) {
-          //   Serial.print(F("deserializeJson() failed: "));
-          //   Serial.println(json_error.c_str());
-          //   // return;
-          // } else {
-          //   /* code */
-          //   // Most of the time, you can rely on the implicit casts.
-          //   // In other case, you can do doc["time"].as<long>();
-          //   String sensor = doc["sensor"];
-          //   long time = doc["time"];
-          //   double latitude = doc["data"][0];
-          //   double longitude = doc["data"][1];
-
-          //   // Print values.
-          //   Serial.println(sensor);
-          //   Serial.println(time);
-          //   Serial.println(latitude, 6);
-          //   Serial.println(longitude, 6);
-          // }
-
-          DeserializationError error = deserializeJson(doc, payload);
+          DeserializationError error = deserializeJson(response, payload);
           if (error) {
             Serial.print(F("deserializeJson() failed: "));
             Serial.println(error.c_str());
             // return;
           } else {
-            String street = doc["success"]["bollard"]["name"];
+            String street = response["success"]["bollard"]["name"];
             // Print values.
             Serial.println(street);
-            // const char *name =  "DOC";//doc["succes"]["bollard"]["name"];
-            // Serial.printf("Street name %s\n", name);
           }
         }
       } else {
@@ -206,6 +177,6 @@ void connect() {
 }
 
 void handleKeyPress() {
-  // currentStop = (currentStop + 1) % stopsCount;
+  currentStop = (currentStop + 1) % bollardsCount;
   wasPressed = true;
 }

@@ -34,7 +34,5 @@ const uint8_t fingerprint[20] =  { 0xBA, 0xED, 0xB9, 0xEB, 0xE4, 0x46, 0xD3, 0x1
 
 # TODO
 Store secrets (SSID, password) outside version control (and cleanup git history)
-Parametrize request with selected 
-Parse answer with arduino json
-https://arduinojson.org/
-Display with SparkFun Micro OLED
+Parametrize request with selected bollard
+Bigger OLED
