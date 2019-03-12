@@ -86,37 +86,35 @@ MicroOLED oled(PIN_RESET, DC_JUMPER);    // I2C declaration
 void handleKeyPress();
 void connect();
 
-
-void setup()
-{
-  Serial.begin(115200);
-  Serial.println();
-
-  pinMode(buttonPin, INPUT); // TODO use internal pullup to omit ext resistor
-  attachInterrupt(digitalPinToInterrupt(buttonPin), handleKeyPress, RISING);
-
+void setupDisplay() {
   Wire.begin();
   oled.begin();    // Initialize the OLED
   oled.clear(ALL); // Clear the display's internal memory
   oled.clear(PAGE); // Clear the buffer.
-  oled.println("I could");
-  oled.println("stick around");
-  oled.println("get along with you");
-  oled.println("hello.");
+  oled.println("");
+  oled.println("PEKA monit");
+  oled.println("");
+  oled.println("start...");
   oled.display();
+}
+
+void setup()
+{
+  Serial.begin(115200);
+  Serial.println("  \r");
+
+  setupDisplay();
   
-  Serial.printf("Connecting to %s ", ssid);
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
- 
+  Serial.printf("\rConnecting to %s ", ssid);
   Serial.flush();
-  delay(1000);
+  delay(500);
   WiFi.mode(WIFI_STA);
   WiFiMulti.addAP(ssid, password);
   
-  Serial.println(" connected");
-
-  connect();
+  Serial.println(" finished");
+  
+  pinMode(buttonPin, INPUT); // TODO use internal pullup to omit ext resistor
+  attachInterrupt(digitalPinToInterrupt(buttonPin), handleKeyPress, RISING);
 }
 
 
@@ -126,7 +124,7 @@ void loop()
     connect();
     wasPressed = false;
   }
-  delay(5000);
+  delay(1000);
 }
 
 void connect() {
@@ -141,8 +139,7 @@ void connect() {
     Serial.print("[HTTPS] begin...\n");
     if (https.begin(*client, postEndpoint)) {  // HTTPS
       https.addHeader("Content-Type", "application/x-www-form-urlencoded");
-      // https.setTimeout(100000);
-
+      
       Serial.print("[HTTPS] POST...\n");
       // start connection and send HTTP header
       int httpCode = https.POST(payload);
@@ -174,7 +171,10 @@ void connect() {
     } else {
       Serial.printf("[HTTPS] Unable to connect\n");
     }
+  } else {
+    Serial.printf("[HTTPS] WiFi not connected\n");
   }
+  
 }
 
 void handleKeyPress() {

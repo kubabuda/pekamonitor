@@ -29,7 +29,7 @@ Getting fingerprint:
 ```
 As for writing this doc, it returns:
 ```  
-BA:ED:B9:EB:E4:46:D3:16:49:40:34:DC:88:66:76:81:28:68:8B:1D
+    BA:ED:B9:EB:E4:46:D3:16:49:40:34:DC:88:66:76:81:28:68:8B:1D
 ```
 Format required by BearSSL::WiFiClientSecure is
 ```c++
@@ -37,7 +37,8 @@ Format required by BearSSL::WiFiClientSecure is
 ```
 
 # TODO
-Parametrize request with selected bollard
-Bigger OLED
-Unit tests
-Update all bollard monitors in background
+- Parametrize request with selected bollard
+- Bigger OLED
+- Unit tests
+- Update all bollard monitors in background
+- Use internal pullup to omit ext resistor
