@@ -6,6 +6,7 @@
 #include <WiFiClientSecureBearSSL.h>
 #include <Wire.h>    // Include Wire for using I2C
 #include <SFE_MicroOLED.h>  // Include the SFE_MicroOLED library
+#include "secrets.h" // const char* ssid, password are outside Git. Change lib/Secrets/_secret.h name and values
 
 
 const uint8_t fingerprint[20] =  { 0xBA, 0xED, 0xB9, 0xEB, 0xE4, 0x46, 0xD3, 0x16, 0x49, 0x40, 0x34, 0xDC, 0x88, 0x66, 0x76, 0x81, 0x28, 0x68, 0x8B, 0x1D };
@@ -13,8 +14,6 @@ const char* postEndpoint = "https://www.peka.poznan.pl/vm/method.vm";
 const char* payload = "method=getTimes&p0={'symbol':'SWRZ01'}";
 
 ESP8266WiFiMulti WiFiMulti;
-const char* ssid = "Poszukiwanie sieci";
-const char* password = "PGVWqDnpAEz3cN";
 
 const int buttonPin = D7;
 volatile bool wasPressed = false;
