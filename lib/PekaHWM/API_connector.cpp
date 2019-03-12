@@ -5,8 +5,6 @@
 const size_t RESPONSE_SIZE = 2048;
 
 StaticJsonDocument<RESPONSE_SIZE> response;
-StaticJsonDocument<RESPONSE_SIZE> timesArray;
-
 
 String getPayload() {
   String payload = "method=getTimes&p0={'symbol':'SWRZ01'}";
@@ -15,47 +13,35 @@ String getPayload() {
 
 
 void displayResponse() {
+    // Show results, for now on serial port
+    // display monitor header
     const char* street = response["success"]["bollard"]["name"];
-    Serial.printf("Ulica: %s\n", street);
-    // iterate over times
-    String timesSerialized = response["success"]["times"];
-    deserializeJson(timesArray, timesSerialized);
-
-    // extract the values
-    // JsonArray array = timesArray.as<JsonArray>();
-    // for(JsonVariant v : array) {
-    //     Serial.println("v");
-    // }
-
+    Serial.printf("Przystanek %s\n", street);
     // iterate over times. commenting it out causes connection refused(-1), IDK why
-    // JsonArray times = response["success"]["times"].as<JsonArray>();
-    // deserializeJson(timesArray, timesSerialized);
-
-    // extract the values
-    // JsonArray times = timesArray.as<JsonArray>();
-    // for(JsonVariant v : times) {
-    //     const char* line = v["line"];
-    //     const char* direction = v["direction"];
-    //     int minutes = v["minutes"].as<int>();
-    //     bool realTime = v["realTime"].as<bool>();
-    //     Serial.printf(" - %s w kierunku %s za %d%s\n", line, direction, minutes,
-    //         realTime ? "" : " [wg rozkladu]");
-        // Serial.println("MHM");
-    // }
-}
-
-void showResponse(String responsePayload) {
-  DeserializationError error = deserializeJson(response, responsePayload);
-  if (error) {
-    Serial.print(F("deserializeJson() failed: "));
-    Serial.println(error.c_str());
-  } else {
-    displayResponse();
-  }
+    JsonArray times = response["success"]["times"].as<JsonArray>();
+    
+    for(JsonVariant v : times) {
+        const char* line = v["line"];
+        const char* direction = v["direction"];
+        int minutes = v["minutes"].as<int>();
+        bool realTime = v["realTime"].as<bool>();
+    
+        Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
+            realTime ? "" : " [wg rozkladu]");
+    }
 }
 
 
 void connect() {
+    String responsePayload = "{\"success\":\{\"bollard\":{\"symbol\":\"RKAP71\",\"tag\":\"RKAP01\",\"name\":\"Rondo Kaponiera\",\"mainBollard\":false},\"times\":[{\"realTime\":false,\"minutes\":13,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:21:00.000Z\",\"line\":\"249\"},{\"realTime\":true,\"minutes\":16,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:24:00.000Z\",\"line\":\"232\"},{\"realTime\":true,\"minutes\":17,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:25:00.000Z\",\"line\":\"238\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Szwajcarska Szpital\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"232\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Szwajcarska Szpital\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"238\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Dębiec\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"249\"}]}}";
+    DeserializationError error = deserializeJson(response, responsePayload);
+    if (error) {
+        Serial.print(F("deserializeJson() failed: "));
+        Serial.println(error.c_str());
+    } else {
+        displayResponse();
+    }
+    return;
   
     std::unique_ptr<BearSSL::WiFiClientSecure>client(new BearSSL::WiFiClientSecure);
 
@@ -81,7 +67,13 @@ void connect() {
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
                 // maybe deserialize using ArduinoJSON stream?
                 String responsePayload = https.getString();
-                showResponse(responsePayload);
+                DeserializationError error = deserializeJson(response, responsePayload);
+                if (error) {
+                    Serial.print(F("deserializeJson() failed: "));
+                    Serial.println(error.c_str());
+                } else {
+                    displayResponse();
+                }
             }
         } else {
             Serial.printf("[HTTPS] POST... failed, error: %s [%d]\n", https.errorToString(httpCode).c_str(), httpCode);
