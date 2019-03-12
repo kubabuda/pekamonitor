@@ -22,10 +22,26 @@ void displayResponse() {
     deserializeJson(timesArray, timesSerialized);
 
     // extract the values
-    JsonArray array = timesArray.as<JsonArray>();
-    for(JsonVariant v : array) {
-        Serial.println("v");
-    }
+    // JsonArray array = timesArray.as<JsonArray>();
+    // for(JsonVariant v : array) {
+    //     Serial.println("v");
+    // }
+
+    // iterate over times. commenting it out causes connection refused(-1), IDK why
+    // JsonArray times = response["success"]["times"].as<JsonArray>();
+    // deserializeJson(timesArray, timesSerialized);
+
+    // extract the values
+    // JsonArray times = timesArray.as<JsonArray>();
+    // for(JsonVariant v : times) {
+    //     const char* line = v["line"];
+    //     const char* direction = v["direction"];
+    //     int minutes = v["minutes"].as<int>();
+    //     bool realTime = v["realTime"].as<bool>();
+    //     Serial.printf(" - %s w kierunku %s za %d%s\n", line, direction, minutes,
+    //         realTime ? "" : " [wg rozkladu]");
+        // Serial.println("MHM");
+    // }
 }
 
 void showResponse(String responsePayload) {
