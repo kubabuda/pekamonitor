@@ -2,9 +2,10 @@
 #include <WiFiClientSecureBearSSL.h>
 #include "API_connector.h"
 
+const size_t RESPONSE_SIZE = 2048;
 
-// PEKA_response response;
-StaticJsonDocument<2048> response; // should be enough
+StaticJsonDocument<RESPONSE_SIZE> response;
+StaticJsonDocument<RESPONSE_SIZE> timesArray;
 
 
 String getPayload() {
@@ -14,10 +15,17 @@ String getPayload() {
 
 
 void displayResponse() {
-  const char* street = response["success"]["bollard"]["name"];
-  Serial.printf("Ulica: %s\n", street);
-  // iterate over times
-  String times = response["success"]["times"];
+    const char* street = response["success"]["bollard"]["name"];
+    Serial.printf("Ulica: %s\n", street);
+    // iterate over times
+    String timesSerialized = response["success"]["times"];
+    deserializeJson(timesArray, timesSerialized);
+
+    // extract the values
+    JsonArray array = timesArray.as<JsonArray>();
+    for(JsonVariant v : array) {
+        Serial.println("v");
+    }
 }
 
 void showResponse(String responsePayload) {
@@ -55,6 +63,7 @@ void connect() {
 
             // file found at server
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+                // maybe deserialize using ArduinoJSON stream?
                 String responsePayload = https.getString();
                 showResponse(responsePayload);
             }

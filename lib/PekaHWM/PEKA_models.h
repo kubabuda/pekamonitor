@@ -45,4 +45,4 @@ bollard_request_t bollards[bollardsCount + 1] = {
   { .symbol = "RYCE04", .name = "Rycerska->Kaponiera" },
 };
 
-
+volatile int currentBollard = 0;

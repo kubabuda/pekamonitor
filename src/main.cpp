@@ -13,9 +13,6 @@ const int buttonPin = D7;
 volatile bool wasPressed = false;
 
 
-volatile int currentBollard = 0;
-
-
 // methods declarations
 void handleKeyPress();
 
