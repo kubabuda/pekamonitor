@@ -13,8 +13,8 @@ const char* postEndpoint = "https://www.peka.poznan.pl/vm/method.vm";
 const char* payload = "method=getTimes&p0={'symbol':'SWRZ01'}";
 
 ESP8266WiFiMulti WiFiMulti;
-const char* ssid = "***REMOVED***";
-const char* password = "***REMOVED***";
+const char* ssid = "Poszukiwanie sieci";
+const char* password = "PGVWqDnpAEz3cN";
 
 const int buttonPin = D7;
 volatile bool wasPressed = false;
@@ -116,6 +116,8 @@ void setup()
   WiFiMulti.addAP(ssid, password);
   
   Serial.println(" connected");
+
+  connect();
 }
 
 
