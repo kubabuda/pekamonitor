@@ -1,6 +1,5 @@
 #include <Wire.h>    // Include Wire for using I2C
 #include <SFE_MicroOLED.h>  // Include the SFE_MicroOLED library
-#include "display.h"
 
 //////////////////////////
 // MicroOLED Definition //
@@ -37,3 +36,4 @@ void displaySetupDone() {
   oled.println("  done.");
   oled.display();
 }
+

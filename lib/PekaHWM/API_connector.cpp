@@ -2,9 +2,7 @@
 #include <WiFiClientSecureBearSSL.h>
 #include "API_connector.h"
 
-const size_t RESPONSE_SIZE = 2048;
 
-StaticJsonDocument<RESPONSE_SIZE> response;
 
 String getPayload(String symbol) {
   String payload = "method=getTimes&p0={'symbol':'" + symbol + "'}";
@@ -12,11 +10,13 @@ String getPayload(String symbol) {
 }
 
 
-void displayResponse() {
+void displayResponse(StaticJsonDocument<MAX_RESPONSE_SIZE>* responsePtr) {
     // Show results, for now on serial port
+    StaticJsonDocument<MAX_RESPONSE_SIZE> response = *responsePtr;
     // display monitor header
     const char* street = response["success"]["bollard"]["name"];
     Serial.printf("Przystanek %s\n", street);
+    
     // iterate over times. commenting it out causes connection refused(-1), IDK why
     JsonArray times = response["success"]["times"].as<JsonArray>();
     
@@ -32,7 +32,7 @@ void displayResponse() {
 }
 
 
-int connect(String symbol) {
+int connect(String symbol, StaticJsonDocument<MAX_RESPONSE_SIZE>* responsePtr) {
     int result = -1;
     std::unique_ptr<BearSSL::WiFiClientSecure>client(new BearSSL::WiFiClientSecure);
 
@@ -59,7 +59,7 @@ int connect(String symbol) {
                 // maybe deserialize using ArduinoJSON stream?
                 String responsePayload = https.getString();
                 // response payload is large, keep it and deserialization in one scope
-                DeserializationError error = deserializeJson(response, responsePayload);
+                DeserializationError error = deserializeJson(*responsePtr, responsePayload);
                 if (error) {
                     Serial.print(F("deserializeJson() failed: "));
                     Serial.println(error.c_str());

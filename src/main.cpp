@@ -3,11 +3,11 @@
 #include <ESP8266WiFiMulti.h>
 #include "API_connector.h"
 #include "PEKA_models.h"
-#include "display.h"
 #include "secrets.h" // const char* ssid, password are outside Git. Change lib/Secrets/_secret.h name and values
 
 
 ESP8266WiFiMulti WiFiMulti;
+StaticJsonDocument<MAX_RESPONSE_SIZE> response;
 
 const int buttonPin = D7;
 volatile bool wasPressed = false;
@@ -43,8 +43,8 @@ void loop()
 {
   if (wasPressed) {
     if ((WiFiMulti.run() == WL_CONNECTED)) {
-      connect("SWRZ01");
-      displayResponse();
+      connect("SWRZ01", &response);
+      displayResponse(&response);
     } else {
       Serial.printf("[WARN] Request omited, wifi not connected\n");
     } 

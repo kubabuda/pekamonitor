@@ -1,5 +1,7 @@
-#include <Arduino.h>
+#ifndef PEKA_MODELS_H
+#define PEKA_MODELS_H
 
+#include <Arduino.h>
 
 // REST API models
 
@@ -46,3 +48,5 @@ bollard_request_t bollards[bollardsCount + 1] = {
 };
 
 volatile int currentBollard = 0;
+
+#endif /* PEKA_MODELS_H */
