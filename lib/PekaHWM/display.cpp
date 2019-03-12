@@ -1,5 +1,6 @@
 #include <Wire.h>    // Include Wire for using I2C
 #include <SFE_MicroOLED.h>  // Include the SFE_MicroOLED library
+#include "API_connector.h"
 
 //////////////////////////
 // MicroOLED Definition //
@@ -35,5 +36,36 @@ void displaySetupDone() {
   oled.println("  Setup");
   oled.println("  done.");
   oled.display();
+}
+
+void displaySymbol(String symbol) {
+    oled.clear(ALL); // Clear the display's internal memory
+    oled.clear(PAGE); // Clear the buffer.
+    oled.setCursor(0, 0);
+    oled.println(symbol);
+    oled.display();
+
+    // // display monitor header
+    // const char* name = response["success"]["bollard"]["name"];
+    // const char* symbol = response["success"]["bollard"]["symbol"];
+    // Serial.printf("Przystanek %s\n", name);
+    // oled.println(symbol);
+
+    // // iterate over times
+    // JsonArray times = response["success"]["times"].as<JsonArray>();
+    
+    // for(JsonVariant v : times) {
+    //     const char* line = v["line"];
+    //     const char* direction = v["direction"];
+    //     int minutes = v["minutes"].as<int>();
+    //     bool realTime = v["realTime"].as<bool>();
+    
+    //     Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
+    //         realTime ? "" : " [wg rozkladu]");
+    //     oled.print(line);
+    //     oled.print("-");
+    //     oled.print(minutes);
+    //     oled.println(realTime ? "m" : "m*");
+    // }
 }
 

@@ -43,18 +43,26 @@ void loop()
 {
   if (wasPressed) {
     if ((WiFiMulti.run() == WL_CONNECTED)) {
-      connect("SWRZ01", &response);
-      displayResponse(&response);
+      String symbol = bollards[currentBollard].symbol;
+      displaySymbol(symbol);
+      connect(symbol, &response); // TODO to state machine to avoid wtd rst
+      // displayResponse(&response);
     } else {
       Serial.printf("[WARN] Request omited, wifi not connected\n");
     } 
     wasPressed = false;
   }
-  delay(1000);
 }
 
 
+
+
 void handleKeyPress() {
-  currentBollard = (currentBollard + 1) % bollardsCount;
-  wasPressed = true;
+  static volatile uint32_t prev = 0;
+  auto debounce_ms = 1000;
+  auto now = millis();
+  if(now > prev + debounce_ms) {
+    currentBollard = (currentBollard + 1) % bollardsCount;
+    wasPressed = true;
+  }
 }

@@ -43,7 +43,7 @@ Format required by BearSSL::WiFiClientSecure is
 
 # TODO
 - Parametrize request with selected bollard
-- Setup OTA
+- Setup OTA, debugger
 - Bigger OLED
 - Unit tests
 - Update all bollard monitors in background

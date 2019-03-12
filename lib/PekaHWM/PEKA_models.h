@@ -39,12 +39,13 @@ struct bollard_request_t {
 } typedef bollard_request_t;
 
 // collection of boards to display
-const int bollardsCount = 2;
+const int bollardsCount = 4;
 
-bollard_request_t bollards[bollardsCount + 1] = {
+bollard_request_t bollards[bollardsCount] = {
   { .symbol = "SWRZ01", .name = "Świerzawska->Ławica" },
   { .symbol = "SWRZ02", .name = "Świerzawska->Kaponiera" },
   { .symbol = "RYCE04", .name = "Rycerska->Kaponiera" },
+  { .symbol = "RKAP71", .name = "Kaponiera->?" },
 };
 
 volatile int currentBollard = 0;
