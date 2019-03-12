@@ -10,8 +10,7 @@
 
 
 const uint8_t fingerprint[20] =  { 0xBA, 0xED, 0xB9, 0xEB, 0xE4, 0x46, 0xD3, 0x16, 0x49, 0x40, 0x34, 0xDC, 0x88, 0x66, 0x76, 0x81, 0x28, 0x68, 0x8B, 0x1D };
-const char* postEndpoint = "https://www.peka.poznan.pl/vm/method.vm";
-const char* payload = "method=getTimes&p0={'symbol':'SWRZ01'}";
+const String postEndpoint = "https://www.peka.poznan.pl/vm/method.vm";
 
 ESP8266WiFiMulti WiFiMulti;
 
@@ -66,7 +65,7 @@ struct PEKA_response {
 
 
 // PEKA_response response;
-DynamicJsonDocument response(2048); // should be enough
+StaticJsonDocument<2048> response; // should be enough
 
 
 //////////////////////////
@@ -98,6 +97,12 @@ void setupDisplay() {
   oled.display();
 }
 
+String getPayload() {
+  String payload = "method=getTimes&p0={'symbol':'SWRZ01'}";
+  return payload;
+}
+
+
 void setup()
 {
   Serial.begin(115200);
@@ -127,6 +132,23 @@ void loop()
   delay(1000);
 }
 
+void displayResponse() {
+  const char* street = response["success"]["bollard"]["name"];
+  Serial.printf("Ulica: %s\n", street);
+  // iterate over times
+  // JsonArray& times = response["success"]["times"];
+}
+
+void showResponse(String responsePayload) {
+  DeserializationError error = deserializeJson(response, responsePayload);
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.c_str());
+  } else {
+    displayResponse();
+  }
+}
+
 void connect() {
   if ((WiFiMulti.run() == WL_CONNECTED)) {
 
@@ -142,6 +164,7 @@ void connect() {
       
       Serial.print("[HTTPS] POST...\n");
       // start connection and send HTTP header
+      String payload = getPayload();
       int httpCode = https.POST(payload);
 
       // httpCode will be negative on error
@@ -151,18 +174,8 @@ void connect() {
 
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-          String payload = https.getString();
-
-          DeserializationError error = deserializeJson(response, payload);
-          if (error) {
-            Serial.print(F("deserializeJson() failed: "));
-            Serial.println(error.c_str());
-            // return;
-          } else {
-            String street = response["success"]["bollard"]["name"];
-            // Print values.
-            Serial.println(street);
-          }
+          String responsePayload = https.getString();
+          showResponse(responsePayload);
         }
       } else {
         Serial.printf("[HTTPS] POST... failed, error: %s [%d]\n", https.errorToString(httpCode).c_str(), httpCode);
