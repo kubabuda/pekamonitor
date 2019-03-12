@@ -6,8 +6,8 @@ const size_t RESPONSE_SIZE = 2048;
 
 StaticJsonDocument<RESPONSE_SIZE> response;
 
-String getPayload() {
-  String payload = "method=getTimes&p0={'symbol':'SWRZ01'}";
+String getPayload(String symbol) {
+  String payload = "method=getTimes&p0={'symbol':'" + symbol + "'}";
   return payload;
 }
 
@@ -32,17 +32,8 @@ void displayResponse() {
 }
 
 
-void connect() {
-    String responsePayload = "{\"success\":\{\"bollard\":{\"symbol\":\"RKAP71\",\"tag\":\"RKAP01\",\"name\":\"Rondo Kaponiera\",\"mainBollard\":false},\"times\":[{\"realTime\":false,\"minutes\":13,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:21:00.000Z\",\"line\":\"249\"},{\"realTime\":true,\"minutes\":16,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:24:00.000Z\",\"line\":\"232\"},{\"realTime\":true,\"minutes\":17,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:25:00.000Z\",\"line\":\"238\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Szwajcarska Szpital\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"232\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Szwajcarska Szpital\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"238\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Dębiec\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"249\"}]}}";
-    DeserializationError error = deserializeJson(response, responsePayload);
-    if (error) {
-        Serial.print(F("deserializeJson() failed: "));
-        Serial.println(error.c_str());
-    } else {
-        displayResponse();
-    }
-    return;
-  
+int connect(String symbol) {
+    int result = -1;
     std::unique_ptr<BearSSL::WiFiClientSecure>client(new BearSSL::WiFiClientSecure);
 
     client->setFingerprint(fingerprint);
@@ -55,7 +46,7 @@ void connect() {
 
         Serial.print("[HTTPS] POST...\n");
         // start connection and send HTTP header
-        String payload = getPayload();
+        String payload = getPayload(symbol);
         int httpCode = https.POST(payload);
 
         // httpCode will be negative on error
@@ -67,19 +58,24 @@ void connect() {
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
                 // maybe deserialize using ArduinoJSON stream?
                 String responsePayload = https.getString();
+                // response payload is large, keep it and deserialization in one scope
                 DeserializationError error = deserializeJson(response, responsePayload);
                 if (error) {
                     Serial.print(F("deserializeJson() failed: "));
                     Serial.println(error.c_str());
                 } else {
-                    displayResponse();
+                    // succes, display moved to other scope
+                    // free response payload memory allocation ASAP
                 }
             }
         } else {
             Serial.printf("[HTTPS] POST... failed, error: %s [%d]\n", https.errorToString(httpCode).c_str(), httpCode);
         }
         https.end();
+        result = httpCode;
     } else {
         Serial.printf("[HTTPS] Unable to connect\n");
-    } 
+    }
+
+    return result;
 }

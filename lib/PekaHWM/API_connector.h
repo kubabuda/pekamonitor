@@ -8,6 +8,7 @@ const uint8_t fingerprint[20] =  { 0xBA, 0xED, 0xB9, 0xEB, 0xE4, 0x46, 0xD3, 0x1
 const String postEndpoint = "https://www.peka.poznan.pl/vm/method.vm";
 
 
-void connect();
+int connect(String symbol);
+void displayResponse();
 
 #endif /* API_CONNECTOR_H */

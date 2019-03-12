@@ -43,7 +43,8 @@ void loop()
 {
   if (wasPressed) {
     if ((WiFiMulti.run() == WL_CONNECTED)) {
-      connect();
+      connect("SWRZ01");
+      displayResponse();
     } else {
       Serial.printf("[WARN] Request omited, wifi not connected\n");
     } 

@@ -22,6 +22,11 @@ Sample response with incoming lines:
     {"success":{"bollard":{"symbol":"RKAP71","tag":"RKAP01","name":"Rondo Kaponiera","mainBollard":false},"times":[{"realTime":false,"minutes":13,"direction":"Rondo Kaponiera","onStopPoint":false,"departure":"2019-03-12T00:21:00.000Z","line":"249"},{"realTime":true,"minutes":16,"direction":"Rondo Kaponiera","onStopPoint":false,"departure":"2019-03-12T00:24:00.000Z","line":"232"},{"realTime":true,"minutes":17,"direction":"Rondo Kaponiera","onStopPoint":false,"departure":"2019-03-12T00:25:00.000Z","line":"238"},{"realTime":false,"minutes":22,"direction":"Szwajcarska Szpital","onStopPoint":false,"departure":"2019-03-12T00:30:00.000Z","line":"232"},{"realTime":false,"minutes":22,"direction":"Szwajcarska Szpital","onStopPoint":false,"departure":"2019-03-12T00:30:00.000Z","line":"238"},{"realTime":false,"minutes":22,"direction":"Dębiec","onStopPoint":false,"departure":"2019-03-12T00:30:00.000Z","line":"249"}]}}
 ```
 
+Same response, escaped as C++ String:
+```c++
+        String responsePayload = "{\"success\":\{\"bollard\":{\"symbol\":\"RKAP71\",\"tag\":\"RKAP01\",\"name\":\"Rondo Kaponiera\",\"mainBollard\":false},\"times\":[{\"realTime\":false,\"minutes\":13,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:21:00.000Z\",\"line\":\"249\"},{\"realTime\":true,\"minutes\":16,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:24:00.000Z\",\"line\":\"232\"},{\"realTime\":true,\"minutes\":17,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:25:00.000Z\",\"line\":\"238\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Szwajcarska Szpital\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"232\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Szwajcarska Szpital\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"238\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Dębiec\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"249\"}]}}";
+```
+
 ## Cert fingertip
 Getting fingerprint:
 ```bash
