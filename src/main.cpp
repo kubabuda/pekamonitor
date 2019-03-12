@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
@@ -30,6 +31,42 @@ volatile bool wasPressed = false;
 // };
 // int stopsCount = 2;
 // volatile int currentStop = 0;
+
+
+struct PEKA_bollard {
+  char* symbol;
+  char* tag;
+  char* name;
+  boolean* mainBollard;
+} typedef PEKA_bollard;
+
+struct PEKA_times {
+    int minutes;
+    boolean realTime;
+    char* line;
+    char* direction;
+    boolean onStopPoint;
+    char* departure;
+} typedef PEKA_times;
+
+struct PEKA_success {
+    PEKA_bollard bollard;
+    PEKA_times times[10];
+} typedef PEKA_success;
+
+struct PEKA_response {
+    PEKA_success success;
+} typedef PEKA_response;
+
+
+// https://arduinojson.org/
+// https://arduinojson.org/v6/example/parser/
+// https://arduinojson.org/2018/09/24/three-tutorials/
+// https://techtutorialsx.com/2016/07/30/esp8266-parsing-json/
+
+
+// PEKA_response response;
+DynamicJsonDocument doc(2048); // should be enough
 
 
 //////////////////////////
@@ -118,12 +155,49 @@ void connect() {
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
           String payload = https.getString();
-          Serial.println(payload);
+          // Serial.println(payload);
+
+          // String json = "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
+          // Serial.println(json);
+          // // Deserialize the JSON document
+          // DeserializationError json_error = deserializeJson(doc, json);
+          // // Test if parsing succeeds.
+          // if (json_error) {
+          //   Serial.print(F("deserializeJson() failed: "));
+          //   Serial.println(json_error.c_str());
+          //   // return;
+          // } else {
+          //   /* code */
+          //   // Most of the time, you can rely on the implicit casts.
+          //   // In other case, you can do doc["time"].as<long>();
+          //   String sensor = doc["sensor"];
+          //   long time = doc["time"];
+          //   double latitude = doc["data"][0];
+          //   double longitude = doc["data"][1];
+
+          //   // Print values.
+          //   Serial.println(sensor);
+          //   Serial.println(time);
+          //   Serial.println(latitude, 6);
+          //   Serial.println(longitude, 6);
+          // }
+
+          DeserializationError error = deserializeJson(doc, payload);
+          if (error) {
+            Serial.print(F("deserializeJson() failed: "));
+            Serial.println(error.c_str());
+            // return;
+          } else {
+            String street = doc["success"]["bollard"]["name"];
+            // Print values.
+            Serial.println(street);
+            // const char *name =  "DOC";//doc["succes"]["bollard"]["name"];
+            // Serial.printf("Street name %s\n", name);
+          }
         }
       } else {
         Serial.printf("[HTTPS] POST... failed, error: %s [%d]\n", https.errorToString(httpCode).c_str(), httpCode);
       }
-
       https.end();
     } else {
       Serial.printf("[HTTPS] Unable to connect\n");
