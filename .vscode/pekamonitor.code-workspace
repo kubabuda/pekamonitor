@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"terminal.integrated.env.linux": {
+			"PATH": "/home/kuba/.platformio/penv/bin:/home/kuba/.platformio/penv:/home/kuba/.sdkman/candidates/gradle/current/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/kuba/.dotnet/tools:/home/kuba/.dotnet/tools",
+			"PLATFORMIO_CALLER": "vscode"
+		}
+	}
+}
