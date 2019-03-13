@@ -44,7 +44,9 @@ void displaySymbol(String symbol) {
     oled.setCursor(0, 0);
     oled.println(symbol);
     oled.display();
-
+    
+    Serial.print("Przystanek "); Serial.println(symbol);
+    
     // // display monitor header
     // const char* name = response["success"]["bollard"]["name"];
     // const char* symbol = response["success"]["bollard"]["symbol"];
