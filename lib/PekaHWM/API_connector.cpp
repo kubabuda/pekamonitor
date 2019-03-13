@@ -73,7 +73,8 @@ int reloadBollard(String symbol, JsonDocument& response) {
     return result;
 }
 
-bool isReloadNeeded(bool wasPressed, unsigned long lastPress, unsigned long now) {
 
-    return wasPressed;
+bool isReloadNeeded(bool wasTriggered, unsigned long lastPress) {
+
+    return wasTriggered || millis() > lastPress + BOLLARD_RELOAD_BREAK;
 }

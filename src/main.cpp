@@ -43,7 +43,7 @@ void loop()
 	static volatile unsigned long prevReload = 0;
   	String symbol = bollards[currentBollard].symbol;
   
-  	if (isReloadNeeded(wasPressed, prevReload, millis())) {
+  	if (isReloadNeeded(wasPressed, prevReload)) {
       	if ((WiFiMulti.run() == WL_CONNECTED)) {
       		Serial.printf("[DEBUG][%lu] Request start for ", millis());
 			Serial.println(symbol);
