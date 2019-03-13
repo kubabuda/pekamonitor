@@ -11,7 +11,7 @@ const String postEndpoint = "https://www.peka.poznan.pl/vm/method.vm";
 const size_t MAX_RESPONSE_SIZE = 4097;
 
 const unsigned long SECOND_MS = 1000;
-const unsigned long BOLLARD_RELOAD_BREAK = 10 * SECOND_MS;
+const unsigned long BOLLARD_RELOAD_BREAK = 60 * SECOND_MS;
 
 // methods
 bool isReloadNeeded(bool wasPressed, unsigned long lastPress);

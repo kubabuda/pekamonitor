@@ -45,7 +45,8 @@ void loop()
   
   	if (isReloadNeeded(wasPressed, prevReload)) {
       	if ((WiFiMulti.run() == WL_CONNECTED)) {
-      		Serial.printf("[DEBUG][%lu] Request start for ", millis());
+			unsigned long start = millis();
+      		Serial.printf("[DEBUG][%lu] Request start for ", start);
 			Serial.println(symbol);
       
 			int statusCode = reloadBollard(symbol, response);
@@ -53,7 +54,7 @@ void loop()
 			
 			if(statusCode > 0) {
 				displayResponse(response);
-				prevReload = 0;
+				prevReload = start;
 			}
 		
 			Serial.printf("[DEBUG][%lu] Request ends now\n", millis());
