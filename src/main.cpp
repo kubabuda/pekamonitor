@@ -44,7 +44,8 @@ void loop()
   
   	if (wasPressed) {
       	if ((WiFiMulti.run() == WL_CONNECTED)) {
-      		Serial.printf("[DEBUG][%lu] Request start\n", millis());
+      		Serial.printf("[DEBUG][%lu] Request start for ", millis());
+			Serial.println(symbol);
       
 			int statusCode = connect(symbol, response);
 			yield();
@@ -64,10 +65,10 @@ void loop()
 
 void handleKeyPress() {
 	static volatile uint32_t prev = 0;
-	auto debounce_ms = 100;
+	auto debounce_time_ms = 200;
 	auto now = millis();   // TODO there must be lib for this
 	
-	if(now > prev + debounce_ms) { // TODO add guard
+	if(now > prev + debounce_time_ms) { // TODO add guard
 		prev = now;
 		currentBollard = (currentBollard + 1) % bollardsCount; // TODO race condition wigh symbol selection, or debounce error
 		wasPressed = true;

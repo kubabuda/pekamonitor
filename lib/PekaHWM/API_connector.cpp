@@ -3,7 +3,6 @@
 #include "API_connector.h"
 
 
-
 String getPayload(String symbol) {
   String payload = "method=getTimes&p0={'symbol':'" + symbol + "'}";
   return payload;

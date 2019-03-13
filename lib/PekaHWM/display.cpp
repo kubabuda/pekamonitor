@@ -46,17 +46,14 @@ void displaySetupDone() {
 
 
 void displayResponse(JsonDocument& response) {
-	yield();		 // TODO check if that much repetition of yield
-	
-	displayCleanup();
+
     // parse monitor header
     const char* name =  response["success"]["bollard"]["name"];
 	const char* symbol =  response["success"]["bollard"]["symbol"];
     // parse display monitor header
 	Serial.printf("Przystanek %s\n", name);
+	displayCleanup();
 	oled.println(symbol);
-
-	yield();
 
     // iterate over departure times
     JsonArray times = response["success"]["times"].as<JsonArray>();
@@ -68,8 +65,6 @@ void displayResponse(JsonDocument& response) {
         const char* direction = v["direction"];
         int minutes = v["minutes"].as<int>();
         bool realTime = v["realTime"].as<bool>();
-
-        yield();
 
 		// display deaparture time details on serial
         Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
