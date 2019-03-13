@@ -36,18 +36,14 @@ void setup()
 	attachInterrupt(digitalPinToInterrupt(buttonPin), handleKeyPress, RISING);
 	
 	displaySetupDone();
-
-	wasPressed = true; // TODO schedule loading times and displaying them
 }
-
-#define EARLY_DEV 1
 
 void loop()
 {
   	String symbol = bollards[currentBollard].symbol;
   
   	if (wasPressed) {
-      	if ((WiFiMulti.run() == WL_CONNECTED) || EARLY_DEV) {
+      	if ((WiFiMulti.run() == WL_CONNECTED)) {
       		Serial.printf("[DEBUG][%lu] Request start\n", millis());
       
 			int statusCode = connect(symbol, response);

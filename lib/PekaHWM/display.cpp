@@ -46,24 +46,25 @@ void displaySetupDone() {
 
 
 void displayResponse(JsonDocument& response) {
-	yield();
+	yield();		 // TODO check if that much repetition of yield, wtd feed is needed
     ESP.wdtFeed();
 	
 	displayCleanup();
-    // parse  display monitor header
+    // parse monitor header
     const char* name =  response["success"]["bollard"]["name"];
 	const char* symbol =  response["success"]["bollard"]["symbol"];
-    
+    // parse display monitor header
 	Serial.printf("Przystanek %s\n", name);
 	oled.println(symbol);
 
 	yield();
     ESP.wdtFeed();
 
-    // iterate over times
+    // iterate over departure times
     JsonArray times = response["success"]["times"].as<JsonArray>();
     int lineNo = 0;
     for(JsonVariant v : times) {
+		// parse time properties
         ++lineNo;
         const char* line = v["line"];
         const char* direction = v["direction"];
@@ -73,8 +74,10 @@ void displayResponse(JsonDocument& response) {
         yield();
         ESP.wdtFeed();
 
+		// display deaparture time details on serial
         Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
             realTime ? "" : " [wg rozkladu]");
+		// display deaparture time details on display
 		if(lineNo <= displayLinesCount) {
 			oled.print(line);
 			oled.print(" - ");
