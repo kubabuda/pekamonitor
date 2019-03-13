@@ -19,23 +19,25 @@ void displayResponse(StaticJsonDocument<MAX_RESPONSE_SIZE>* responsePtr) {
     // // display monitor header
     const char* street =  response["success"]["bollard"]["name"];
     Serial.printf("Przystanek %s\n", street);
-    // ESP.wdtFeed();
     yield();
+    ESP.wdtFeed();
 
     // // iterate over times. commenting it out causes connection refused(-1), IDK why
-    // JsonArray times = response["success"]["times"].as<JsonArray>();
+    JsonArray times = response["success"]["times"].as<JsonArray>();
     
-    // for(JsonVariant v : times) {
-    //     const char* line = v["line"];
-    //     const char* direction = v["direction"];
-    //     int minutes = v["minutes"].as<int>();
-    //     bool realTime = v["realTime"].as<bool>();
-    //     ESP.wdtFeed();
+    for(JsonVariant v : times) {
+        const char* line = v["line"];
+        const char* direction = v["direction"];
+        int minutes = v["minutes"].as<int>();
+        bool realTime = v["realTime"].as<bool>();
+        yield();
+        ESP.wdtFeed();
 
-    //     Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
-    //         realTime ? "" : " [wg rozkladu]");
-    //     ESP.wdtFeed();
-    // }
+        Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
+            realTime ? "" : " [wg rozkladu]");
+        yield();
+        ESP.wdtFeed();
+    }
 }
 
 

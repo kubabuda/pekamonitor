@@ -36,6 +36,8 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(buttonPin), handleKeyPress, RISING);
  
   displaySetupDone();
+
+  wasPressed = true;
 }
 
 #define EARLY_DEV 1
@@ -44,15 +46,18 @@ void loop()
 {
   String symbol = bollards[currentBollard].symbol;
   
-  if (wasPressed || EARLY_DEV) {
+  if (wasPressed) {
     if ((WiFiMulti.run() == WL_CONNECTED) || EARLY_DEV) {
-      Serial.printf("[DEBUG] Request start\n");
+      Serial.printf("[DEBUG][%lu] Request start\n", millis());
       displaySymbol(symbol);
       ESP.wdtFeed();
+      
       connect(symbol, NULL);
       ESP.wdtFeed();
+      
       displayResponse(NULL); // watchdog still resets on this
-      Serial.printf("[DEBUG] Request stop now\n");
+      
+      Serial.printf("[DEBUG][%lu] Request stop now\n", millis());
     } else {
       Serial.printf("[WARN] Request omited, wifi not connected\n");
     } 

@@ -1,6 +1,6 @@
 #include <Wire.h>    // Include Wire for using I2C
 #include <SFE_MicroOLED.h>  // Include the SFE_MicroOLED library
-#include "API_connector.h"
+// #include "API_connector.h"
 
 //////////////////////////
 // MicroOLED Definition //
@@ -44,7 +44,7 @@ void displaySymbol(String symbol) {
     oled.setCursor(0, 0);
     oled.println(symbol);
     oled.display();
-    
+
     Serial.print("Przystanek "); Serial.println(symbol);
     
     // // display monitor header
