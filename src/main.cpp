@@ -7,7 +7,8 @@
 
 
 ESP8266WiFiMulti WiFiMulti;
-// StaticJsonDocument<MAX_RESPONSE_SIZE> response;
+
+StaticJsonDocument<MAX_RESPONSE_SIZE> woohoo_response;
 
 const int buttonPin = D7;
 volatile bool wasPressed = false;
@@ -52,10 +53,10 @@ void loop()
       displaySymbol(symbol);
       ESP.wdtFeed();
       
-      connect(symbol, NULL);
+      connect(symbol, woohoo_response);
       ESP.wdtFeed();
       
-      displayResponse(NULL); // watchdog still resets on this
+      displayResponse(woohoo_response); // watchdog still resets on this
       
       Serial.printf("[DEBUG][%lu] Request stop now\n", millis());
     } else {

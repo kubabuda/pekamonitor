@@ -11,11 +11,11 @@ const String postEndpoint = "https://www.peka.poznan.pl/vm/method.vm";
 const size_t MAX_RESPONSE_SIZE = 4097;
 
 
-int connect(String symbol, StaticJsonDocument<MAX_RESPONSE_SIZE>* responsePtr);
+int connect(String symbol, JsonDocument& response);
 
 void displaySetup();
 void displaySetupDone();
 void displaySymbol(String symbol);
-void displayResponse(StaticJsonDocument<MAX_RESPONSE_SIZE>* responsePtr);
+void displayResponse(JsonDocument& response);
 
 #endif /* API_CONNECTOR_H */

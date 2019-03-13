@@ -9,39 +9,8 @@ String getPayload(String symbol) {
   return payload;
 }
 
-StaticJsonDocument<MAX_RESPONSE_SIZE> response;
 
-
-void displayResponse(StaticJsonDocument<MAX_RESPONSE_SIZE>* responsePtr) {
-    // // Show results, for now on serial port
-    yield();
-    ESP.wdtFeed();
-    // // display monitor header
-    const char* street =  response["success"]["bollard"]["name"];
-    Serial.printf("Przystanek %s\n", street);
-    yield();
-    ESP.wdtFeed();
-
-    // // iterate over times. commenting it out causes connection refused(-1), IDK why
-    JsonArray times = response["success"]["times"].as<JsonArray>();
-    
-    for(JsonVariant v : times) {
-        const char* line = v["line"];
-        const char* direction = v["direction"];
-        int minutes = v["minutes"].as<int>();
-        bool realTime = v["realTime"].as<bool>();
-        yield();
-        ESP.wdtFeed();
-
-        Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
-            realTime ? "" : " [wg rozkladu]");
-        yield();
-        ESP.wdtFeed();
-    }
-}
-
-
-int connect(String symbol, StaticJsonDocument<MAX_RESPONSE_SIZE>* responsePtr) {
+int connect(String symbol, JsonDocument& response) {
     const String responsePayload = "{\"success\":\{\"bollard\":{\"symbol\":\"RKAP71\",\"tag\":\"RKAP01\",\"name\":\"Rondo Kaponiera\",\"mainBollard\":false},\"times\":[{\"realTime\":false,\"minutes\":13,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:21:00.000Z\",\"line\":\"249\"},{\"realTime\":true,\"minutes\":16,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:24:00.000Z\",\"line\":\"232\"},{\"realTime\":true,\"minutes\":17,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:25:00.000Z\",\"line\":\"238\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Szwajcarska Szpital\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"232\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Szwajcarska Szpital\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"238\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Dębiec\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"249\"}]}}";
     // response payload is large, keep it and deserialization in one scope
     DeserializationError error = deserializeJson(response, responsePayload);
