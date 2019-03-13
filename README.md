@@ -47,4 +47,7 @@ Format required by BearSSL::WiFiClientSecure is
 - Create bollard monitor data structure for bollard info so parsing and displaying is decoupled, so display refresh can be faster (no waiting for parsing, serial printing...)
 - Update all bollard monitors in background so switch is instant
 - Use internal pullup to omit ext resistor
+- Make selected bollard persistent - store current bollard # in EEPROM
+- Feed WiFi multi with arbitrary number of password, ssid pairs
+- Store encrypted password, ssid in eeprom
 - Unit tests - requires paid PIO Plus - to bottom of backlog

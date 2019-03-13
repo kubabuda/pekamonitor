@@ -45,7 +45,7 @@ void loop()
   
   	if (isReloadNeeded(wasPressed, prevReload)) {
       	if ((WiFiMulti.run() == WL_CONNECTED)) {
-			unsigned long start = millis();
+			auto start = millis();
       		Serial.printf("[%lu] Reloading bollard info for ", start);
 			Serial.println(symbol);
       
@@ -73,7 +73,8 @@ void handleKeyPress() {
 	
 	if(now > prev + debounce_time_ms) { // TODO add guard
 		prev = now;
-		currentBollard = (currentBollard + 1) % bollardsCount; // TODO race condition wigh symbol selection, or debounce error
+		++currentBollard;
+		currentBollard %= bollardsCount;
 		wasPressed = true;
 	}
 }
