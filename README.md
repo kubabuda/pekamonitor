@@ -42,9 +42,9 @@ Format required by BearSSL::WiFiClientSecure is
 ```
 
 # TODO
-- Parametrize request with selected bollard
 - Setup OTA, debugger
 - Bigger OLED
-- Unit tests
-- Update all bollard monitors in background
+- Create bollard monitor data structure for bollard info so parsing and displaying is decoupled, so display refresh can be faster (no waiting for parsing, serial printing...)
+- Update all bollard monitors in background so switch is instant
 - Use internal pullup to omit ext resistor
+- Unit tests - requires paid PIO Plus - to bottom of backlog
