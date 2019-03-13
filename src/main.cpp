@@ -21,24 +21,23 @@ void handleKeyPress();
 void setup()
 {
 	Serial.begin(115200);
+	Serial.flush();
 	Serial.println("  \r");
 
 	displaySetup();
 	
 	Serial.printf("\rConnecting to %s ", ssid);
-	Serial.flush();
 	delay(500);
 	WiFi.mode(WIFI_STA);
-	WiFiMulti.addAP(ssid, password);
-	
-	Serial.println(" finished");
+	WiFiMulti.addAP(ssid, password);	
+	Serial.println("finished");
 	
 	pinMode(buttonPin, INPUT); // TODO use internal pullup to omit ext resistor
 	attachInterrupt(digitalPinToInterrupt(buttonPin), handleKeyPress, RISING);
 	
 	displaySetupDone();
 
-	wasPressed = true;
+	wasPressed = true; // TODO schedule loading times and displaying them
 }
 
 #define EARLY_DEV 1
@@ -55,14 +54,14 @@ void loop()
 			ESP.wdtFeed();
 			
 			if(statusCode > 0) {
-				displayResponse(response); // watchdog still resets on this
+				displayResponse(response);
 			}
 		
 			Serial.printf("[DEBUG][%lu] Request stop now\n", millis());
     	} else {
       		Serial.printf("[WARN] Request omited, wifi not connected\n");
     	} 
-    	wasPressed = false; // TODO state machine to avoid wtd rst
+    	wasPressed = false;
   	}
 
   	ESP.wdtFeed();
@@ -76,7 +75,7 @@ void handleKeyPress() {
 	
 	if(now > prev + debounce_ms) { // TODO add guard
 		prev = now;
-		currentBollard = (currentBollard + 1) % bollardsCount; // TODO race condition wigh symbol selection
+		currentBollard = (currentBollard + 1) % bollardsCount; // TODO race condition wigh symbol selection, or debounce error
 		wasPressed = true;
 	}
 }
