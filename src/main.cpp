@@ -40,21 +40,23 @@ void setup()
 
 void loop()
 {
+	static volatile unsigned long prevReload = 0;
   	String symbol = bollards[currentBollard].symbol;
   
-  	if (wasPressed) {
+  	if (isReloadNeeded(wasPressed, prevReload, millis())) {
       	if ((WiFiMulti.run() == WL_CONNECTED)) {
       		Serial.printf("[DEBUG][%lu] Request start for ", millis());
 			Serial.println(symbol);
       
-			int statusCode = connect(symbol, response);
+			int statusCode = reloadBollard(symbol, response);
 			yield();
 			
 			if(statusCode > 0) {
 				displayResponse(response);
+				prevReload = 0;
 			}
 		
-			Serial.printf("[DEBUG][%lu] Request stop now\n", millis());
+			Serial.printf("[DEBUG][%lu] Request ends now\n", millis());
     	} else {
       		Serial.printf("[WARN] Request omited, wifi not connected\n");
     	} 

@@ -10,11 +10,16 @@ const String postEndpoint = "https://www.peka.poznan.pl/vm/method.vm";
 
 const size_t MAX_RESPONSE_SIZE = 4097;
 
+const int SECOND_MS = 1000;
+const int BOLLARD_RELOAD_BREAK = 60 * SECOND_MS;
 
-int connect(String symbol, JsonDocument& response);
+// methods
+bool isReloadNeeded(bool wasPressed, unsigned long lastPress, unsigned long now);
+int reloadBollard(String symbol, JsonDocument& response);
 
 void displaySetup();
 void displaySetupDone();
 void displayResponse(JsonDocument& response);
+
 
 #endif /* API_CONNECTOR_H */
