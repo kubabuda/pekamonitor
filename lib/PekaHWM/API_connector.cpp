@@ -49,22 +49,22 @@ int connect(String symbol, JsonDocument& response) {
 
             // file found at server
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-                
+                                
                 // maybe deserialize using ArduinoJSON stream?
-                String responsePayload = https.getString();
-                // response payload is large, keep it and deserialization in one scope
+                String responsePayload = https.getString();    
+                // deserialize JSON response
                 DeserializationError error = deserializeJson(response, responsePayload);
                 if (error) {
                     Serial.print(F("deserializeJson() failed: "));
                     Serial.println(error.c_str());
                 } else {
-                    // succes, display moved to other scope
-                    // free response payload memory allocation ASAP
+                    // succes
                 }
             }
         } else {
             Serial.printf("[HTTPS] POST... failed, error: %s [%d]\n", https.errorToString(httpCode).c_str(), httpCode);
         }
+        // cleanup
         https.end();
         result = httpCode;
     } else {
