@@ -50,8 +50,6 @@ void loop()
   if (wasPressed) {
     if ((WiFiMulti.run() == WL_CONNECTED) || EARLY_DEV) {
       Serial.printf("[DEBUG][%lu] Request start\n", millis());
-      displaySymbol(symbol);
-      ESP.wdtFeed();
       
       connect(symbol, woohoo_response);
       ESP.wdtFeed();

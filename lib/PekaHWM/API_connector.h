@@ -15,7 +15,6 @@ int connect(String symbol, JsonDocument& response);
 
 void displaySetup();
 void displaySetupDone();
-void displaySymbol(String symbol);
 void displayResponse(JsonDocument& response);
 
 #endif /* API_CONNECTOR_H */

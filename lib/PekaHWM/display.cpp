@@ -17,76 +17,55 @@
 MicroOLED oled(PIN_RESET, DC_JUMPER);    // I2C declaration
 
 
+void displayCleanup() {
+    oled.clear(ALL); // Clear the display's internal memory
+    oled.clear(PAGE); // Clear the buffer.
+    oled.setCursor(0, 0);    
+}
+
 void displaySetup() {
-  Wire.begin();
-  oled.begin();    // Initialize the OLED
-  oled.clear(ALL); // Clear the display's internal memory
-  oled.clear(PAGE); // Clear the buffer.
-  oled.println("");
-  oled.println("PEKA monit");
-  oled.println("");
-  oled.println("start...");
-  oled.display();
+	Wire.begin();
+	oled.begin();    // Initialize the OLED
+	displayCleanup();
+	
+	oled.println("");
+	oled.println("PEKA monit");
+	oled.println("");
+	oled.println("start...");
+	
+	oled.display();
 }
 
 void displaySetupDone() {
-  oled.clear(ALL); // Clear the display's internal memory
-  oled.clear(PAGE); // Clear the buffer.
-  oled.setCursor(0, 0);
-  oled.println("");
-  oled.println("");
-  oled.println("  Setup");
-  oled.println("  done.");
-  oled.display();
+	displayCleanup();
+
+	oled.println("");
+	oled.println("");
+	oled.println("  Setup");
+	oled.println("  done.");
+	
+	oled.display();
 }
 
-void displaySymbol(String symbol) {
-    oled.clear(ALL); // Clear the display's internal memory
-    oled.clear(PAGE); // Clear the buffer.
-    oled.setCursor(0, 0);
-    oled.println(symbol);
-    oled.display();
-
-    Serial.print("Przystanek "); Serial.println(symbol);
-    
-    // // display monitor header
-    // const char* name = response["success"]["bollard"]["name"];
-    // const char* symbol = response["success"]["bollard"]["symbol"];
-    // Serial.printf("Przystanek %s\n", name);
-    // oled.println(symbol);
-
-    // // iterate over times
-    // JsonArray times = response["success"]["times"].as<JsonArray>();
-    
-    // for(JsonVariant v : times) {
-    //     const char* line = v["line"];
-    //     const char* direction = v["direction"];
-    //     int minutes = v["minutes"].as<int>();
-    //     bool realTime = v["realTime"].as<bool>();
-    
-    //     Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
-    //         realTime ? "" : " [wg rozkladu]");
-    //     oled.print(line);
-    //     oled.print("-");
-    //     oled.print(minutes);
-    //     oled.println(realTime ? "m" : "m*");
-    // }
-}
 
 void displayResponse(JsonDocument& response) {
-    // // Show results, for now on serial port
-    yield();
+	yield();
     ESP.wdtFeed();
-    // // display monitor header
-    const char* street =  response["success"]["bollard"]["name"];
-    Serial.printf("Przystanek %s\n", street);
-    yield();
+	displayCleanup();
+    // parse  display monitor header
+    const char* name =  response["success"]["bollard"]["name"];
+	const char* symbol =  response["success"]["bollard"]["symbol"];
+    
+	Serial.printf("Przystanek %s\n", name);
+
+	yield();
     ESP.wdtFeed();
 
-    // // iterate over times. commenting it out causes connection refused(-1), IDK why
+    // iterate over times
     JsonArray times = response["success"]["times"].as<JsonArray>();
-    
+    int lineNo = 1;
     for(JsonVariant v : times) {
+        ++lineNo;
         const char* line = v["line"];
         const char* direction = v["direction"];
         int minutes = v["minutes"].as<int>();
@@ -99,4 +78,6 @@ void displayResponse(JsonDocument& response) {
         yield();
         ESP.wdtFeed();
     }
+
+    oled.display();
 }
