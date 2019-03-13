@@ -8,7 +8,7 @@
 
 ESP8266WiFiMulti WiFiMulti;
 
-StaticJsonDocument<MAX_RESPONSE_SIZE> woohoo_response;
+StaticJsonDocument<MAX_RESPONSE_SIZE> response;
 
 const int buttonPin = D7;
 volatile bool wasPressed = false;
@@ -20,61 +20,63 @@ void handleKeyPress();
 
 void setup()
 {
-  Serial.begin(115200);
-  Serial.println("  \r");
+	Serial.begin(115200);
+	Serial.println("  \r");
 
-  displaySetup();
-  
-  Serial.printf("\rConnecting to %s ", ssid);
-  Serial.flush();
-  delay(500);
-  WiFi.mode(WIFI_STA);
-  WiFiMulti.addAP(ssid, password);
-  
-  Serial.println(" finished");
-  
-  pinMode(buttonPin, INPUT); // TODO use internal pullup to omit ext resistor
-  attachInterrupt(digitalPinToInterrupt(buttonPin), handleKeyPress, RISING);
- 
-  displaySetupDone();
+	displaySetup();
+	
+	Serial.printf("\rConnecting to %s ", ssid);
+	Serial.flush();
+	delay(500);
+	WiFi.mode(WIFI_STA);
+	WiFiMulti.addAP(ssid, password);
+	
+	Serial.println(" finished");
+	
+	pinMode(buttonPin, INPUT); // TODO use internal pullup to omit ext resistor
+	attachInterrupt(digitalPinToInterrupt(buttonPin), handleKeyPress, RISING);
+	
+	displaySetupDone();
 
-  wasPressed = true;
+	wasPressed = true;
 }
 
 #define EARLY_DEV 1
 
 void loop()
 {
-  String symbol = bollards[currentBollard].symbol;
+  	String symbol = bollards[currentBollard].symbol;
   
-  if (wasPressed) {
-    if ((WiFiMulti.run() == WL_CONNECTED) || EARLY_DEV) {
-      Serial.printf("[DEBUG][%lu] Request start\n", millis());
+  	if (wasPressed) {
+      	if ((WiFiMulti.run() == WL_CONNECTED) || EARLY_DEV) {
+      		Serial.printf("[DEBUG][%lu] Request start\n", millis());
       
-      connect(symbol, woohoo_response);
-      ESP.wdtFeed();
-      
-      displayResponse(woohoo_response); // watchdog still resets on this
-      
-      Serial.printf("[DEBUG][%lu] Request stop now\n", millis());
-    } else {
-      Serial.printf("[WARN] Request omited, wifi not connected\n");
-    } 
-    wasPressed = false; // TODO state machine to avoid wtd rst
-  }
+			int statusCode = connect(symbol, response);
+			ESP.wdtFeed();
+			
+			if(statusCode > 0) {
+				displayResponse(response); // watchdog still resets on this
+			}
+		
+			Serial.printf("[DEBUG][%lu] Request stop now\n", millis());
+    	} else {
+      		Serial.printf("[WARN] Request omited, wifi not connected\n");
+    	} 
+    	wasPressed = false; // TODO state machine to avoid wtd rst
+  	}
 
-  ESP.wdtFeed();
+  	ESP.wdtFeed();
 }
 
 
 void handleKeyPress() {
-  static volatile uint32_t prev = 0;
-  auto debounce_ms = 100;
-  auto now = millis();   // TODO there must be lib for this
-  
-  if(now > prev + debounce_ms) { // TODO add guard
-    prev = now;
-    currentBollard = (currentBollard + 1) % bollardsCount; // TODO race condition wigh symbol selection
-    wasPressed = true;
-  }
+	static volatile uint32_t prev = 0;
+	auto debounce_ms = 100;
+	auto now = millis();   // TODO there must be lib for this
+	
+	if(now > prev + debounce_ms) { // TODO add guard
+		prev = now;
+		currentBollard = (currentBollard + 1) % bollardsCount; // TODO race condition wigh symbol selection
+		wasPressed = true;
+	}
 }

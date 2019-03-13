@@ -48,6 +48,7 @@ void displaySetupDone() {
 void displayResponse(JsonDocument& response) {
 	yield();
     ESP.wdtFeed();
+	
 	displayCleanup();
     // parse  display monitor header
     const char* name =  response["success"]["bollard"]["name"];
@@ -68,6 +69,7 @@ void displayResponse(JsonDocument& response) {
         const char* direction = v["direction"];
         int minutes = v["minutes"].as<int>();
         bool realTime = v["realTime"].as<bool>();
+
         yield();
         ESP.wdtFeed();
 
