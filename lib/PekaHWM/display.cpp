@@ -46,8 +46,7 @@ void displaySetupDone() {
 
 
 void displayResponse(JsonDocument& response) {
-	yield();		 // TODO check if that much repetition of yield, wtd feed is needed
-    ESP.wdtFeed();
+	yield();		 // TODO check if that much repetition of yield
 	
 	displayCleanup();
     // parse monitor header
@@ -58,7 +57,6 @@ void displayResponse(JsonDocument& response) {
 	oled.println(symbol);
 
 	yield();
-    ESP.wdtFeed();
 
     // iterate over departure times
     JsonArray times = response["success"]["times"].as<JsonArray>();
@@ -72,7 +70,6 @@ void displayResponse(JsonDocument& response) {
         bool realTime = v["realTime"].as<bool>();
 
         yield();
-        ESP.wdtFeed();
 
 		// display deaparture time details on serial
         Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
@@ -86,7 +83,6 @@ void displayResponse(JsonDocument& response) {
 		}
 
         yield();
-        ESP.wdtFeed();
     }
 
     oled.display();

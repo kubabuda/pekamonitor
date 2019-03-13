@@ -40,6 +40,7 @@ int connect(String symbol, JsonDocument& response) {
         // start connection and send HTTP header
         String payload = getPayload(symbol);
         int httpCode = https.POST(payload);
+        yield();
 
         // httpCode will be negative on error
         if (httpCode > 0) {
@@ -48,6 +49,7 @@ int connect(String symbol, JsonDocument& response) {
 
             // file found at server
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+                
                 // maybe deserialize using ArduinoJSON stream?
                 String responsePayload = https.getString();
                 // response payload is large, keep it and deserialization in one scope

@@ -5,7 +5,7 @@ This is repo for hardware counterpart for PEKA Virtual Monitor for home use, wit
 # VM API 
 
 ## Request
-Symbol parameter is code for bus/tram stop (streed name + direction):
+Symbol parameter is code for bus/tram stop (street name + direction):
 ```bash
     curl -d "method=getTimes&p0={'symbol':'RKAP71'}" \
          -H "Content-Type: application/x-www-form-urlencoded" \

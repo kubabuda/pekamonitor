@@ -47,9 +47,7 @@ void loop()
       		Serial.printf("[DEBUG][%lu] Request start\n", millis());
       
 			int statusCode = connect(symbol, response);
-			
 			yield();
-  			ESP.wdtFeed();
 			
 			if(statusCode > 0) {
 				displayResponse(response);
