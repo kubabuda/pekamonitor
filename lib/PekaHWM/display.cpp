@@ -4,18 +4,15 @@
 #include <SFE_MicroOLED.h>  // Include the SFE_MicroOLED library
 #include "API_connector.h"
 
-//////////////////////////
-// MicroOLED Definition //
-//////////////////////////
+
 //The library assumes a reset pin is necessary. The Qwiic OLED has RST hard-wired, so pick an arbitrarty IO pin that is not being used
 #define PIN_RESET 255  
 //The DC_JUMPER is the I2C Address Select jumper. Set to 1 if the jumper is open (Default), or set to 0 if it's closed.
 #define DC_JUMPER 0
-//////////////////////////////////
-// MicroOLED Object Declaration //
-//////////////////////////////////
+
 MicroOLED oled(PIN_RESET, DC_JUMPER);    // I2C declaration
 
+const int displayLinesCount = 6; // how many lines of text fits on display
 
 void displayCleanup() {
     oled.clear(ALL); // Clear the display's internal memory
@@ -24,12 +21,12 @@ void displayCleanup() {
 }
 
 void displaySetup() {
-	Wire.begin();
-	oled.begin();    // Initialize the OLED
+	Wire.begin();	// TODO benchmark and compare with SPI
+	oled.begin();   // Initialize the OLED
 	displayCleanup();
 	
 	oled.println("");
-	oled.println("PEKA monit");
+	oled.println("PEKA HWM");
 	oled.println("");
 	oled.println("start...");
 	
@@ -57,13 +54,14 @@ void displayResponse(JsonDocument& response) {
 	const char* symbol =  response["success"]["bollard"]["symbol"];
     
 	Serial.printf("Przystanek %s\n", name);
+	oled.println(symbol);
 
 	yield();
     ESP.wdtFeed();
 
     // iterate over times
     JsonArray times = response["success"]["times"].as<JsonArray>();
-    int lineNo = 1;
+    int lineNo = 0;
     for(JsonVariant v : times) {
         ++lineNo;
         const char* line = v["line"];
@@ -75,6 +73,13 @@ void displayResponse(JsonDocument& response) {
 
         Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
             realTime ? "" : " [wg rozkladu]");
+		if(lineNo <= displayLinesCount) {
+			oled.print(line);
+			oled.print(" - ");
+			oled.print(minutes);
+			oled.println(realTime ? "" : "*");
+		}
+
         yield();
         ESP.wdtFeed();
     }
