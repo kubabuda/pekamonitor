@@ -49,7 +49,7 @@ int connect(String symbol, JsonDocument& response) {
             // file found at server
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
                                 
-                // maybe deserialize using ArduinoJSON stream?
+                // deserializing stream by ArduinoJSON is not supported on ESP8266
                 String responsePayload = https.getString();    
                 // deserialize JSON response
                 DeserializationError error = deserializeJson(response, responsePayload);
