@@ -74,7 +74,7 @@ void displayResponse(JsonDocument& response) {
 			oled.print(line);
 			oled.print(" - ");
 			oled.print(minutes);
-			oled.println(realTime ? "" : "*");
+			oled.println(realTime ? "m" : "*");
 		}
 
         yield();
