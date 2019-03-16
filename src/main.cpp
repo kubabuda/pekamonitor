@@ -2,7 +2,6 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <ESPRotary.h>
-#include <Ticker.h>
 #include "API_connector.h"
 #include "secrets.h" // const char* ssid, password are outside Git. Change lib/Secrets/_secret.h name and values
 
@@ -16,8 +15,6 @@ const int dtPin = D4; 	  // DT
 const int buttonPin = D3; // SW
 
 ESPRotary rotary = ESPRotary(dtPin, clkPin);
-
-Ticker blinker;
 
 
 // methods declarations
@@ -41,16 +38,12 @@ void setup()
 	pinMode(buttonPin, INPUT);
 	attachInterrupt(digitalPinToInterrupt(buttonPin), reloadCurrentBollard, FALLING);
 	
-	rotary.setLeftRotationHandler(decrementCurrentBollard);
+	rotary.setLeftRotationHandler(incrementCurrentBollard);
   	rotary.setRightRotationHandler(incrementCurrentBollard);
-    blinker.attach(0.01, rotary_loop); //Use <strong>attach_ms</strong> if you need time in ms
 
 	displaySetupDone();
 }
 
-void rotary_loop() {
-	rotary.loop();
-}
 
 void loop()
 {
@@ -80,5 +73,6 @@ void loop()
 			// todo display WiFi conn problem
     	}
   	}
+	rotary.loop();
 }
 

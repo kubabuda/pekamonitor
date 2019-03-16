@@ -55,6 +55,7 @@ Format required by BearSSL::WiFiClientSecure is
 
 # TODO
 - Setup OTA, debugger
+- load realtime from external service
 - Bigger OLED
 - create timer interrupt and run encoder loop in it 
 - or find library that will work with long POST in loops
