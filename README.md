@@ -2,6 +2,18 @@
 
 This is repo for hardware counterpart for PEKA Virtual Monitor for home use, with WiFi on ESP8266 WeMos.
 
+# Hardware
+
+- WeMos ESP8266:
+- Micro OLED shield
+- Rotary encoder:
+## Connections
+- OLED shield over I2C - no jumper - 0x3C
+- rotary CLK - D3
+- rotary DT - D2
+- rotary Sw - D1
+
+
 # VM API 
 
 ## Request
@@ -42,6 +54,7 @@ Format required by BearSSL::WiFiClientSecure is
 ```
 
 # TODO
+- Rotary encoder
 - Setup OTA, debugger
 - Bigger OLED
 - Create bollard monitor data structure for bollard info so parsing and displaying is decoupled, so display refresh can be faster (no waiting for parsing, serial printing...)
@@ -49,5 +62,7 @@ Format required by BearSSL::WiFiClientSecure is
 - Use internal pullup to omit ext resistor
 - Make selected bollard persistent - store current bollard # in EEPROM
 - Feed WiFi multi with arbitrary number of password, ssid pairs
-- Store encrypted password, ssid in eeprom
+- Store encrypted password, ssid in eeprom (SPIFFS?)
+- Create commandline interface to change ssids, passwords
+- setup AP with web interface to change ssids, passwords
 - Unit tests - requires paid PIO Plus - to bottom of backlog

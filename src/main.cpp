@@ -10,12 +10,13 @@ ESP8266WiFiMulti WiFiMulti;
 
 StaticJsonDocument<MAX_RESPONSE_SIZE> response;
 
-const int buttonPin = D7;
+const int buttonPin = D3;
 volatile bool wasPressed = false;
 
 
 // methods declarations
-void handleKeyPress();
+void incrementCurrentBollard();
+void decrementCurrentBollard();
 
 
 void setup()
@@ -33,7 +34,7 @@ void setup()
 	Serial.println("finished");
 	
 	pinMode(buttonPin, INPUT); // TODO use internal pullup to omit ext resistor
-	attachInterrupt(digitalPinToInterrupt(buttonPin), handleKeyPress, RISING);
+	attachInterrupt(digitalPinToInterrupt(buttonPin), incrementCurrentBollard, RISING);
 	
 	displaySetupDone();
 }
@@ -66,15 +67,29 @@ void loop()
 }
 
 
-void handleKeyPress() {
-	static volatile uint32_t prev = 0;
-	auto debounce_time_ms = 200;
+static volatile uint32_t prev = 0;
+const uint32_t debounce_time_ms = 200;
+
+void incrementCurrentBollard() {
 	auto now = millis();   // TODO there must be lib for this
 	
-	if(now > prev + debounce_time_ms) { // TODO add guard
+	if (now > prev + debounce_time_ms) { // TODO add guard
 		prev = now;
 		++currentBollard;
 		currentBollard %= bollardsCount;
+		wasPressed = true;
+	}
+}
+
+void decrementCurrentBollard() {
+	auto now = millis();   // TODO there must be lib for this
+	
+	if (now > prev + debounce_time_ms) { // TODO add guard
+		prev = now;
+		--currentBollard;
+		if (currentBollard < 0) {
+			currentBollard = bollardsCount - 1;
+		}  
 		wasPressed = true;
 	}
 }
