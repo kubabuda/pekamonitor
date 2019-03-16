@@ -48,7 +48,8 @@ void displaySetupDone() {
 void displayLoading(String symbol) {
 	displayCleanup();
 	
-	oled.setCursor(0, 3);
+	oled.println("");
+	oled.println("");
 	oled.println("  Loading");
 	oled.print("  ");
 	oled.println(symbol);
@@ -100,8 +101,8 @@ void displayResponse(JsonDocument& response) {
 void displayLoadingFailed(String symbol) {
 	displayCleanup();
 	
-	oled.println(" ");
-	oled.println(" ");
+	oled.println("");
+	oled.println("");
 	oled.println("  Loading");
 	oled.print("  ");
 	oled.println(symbol);
