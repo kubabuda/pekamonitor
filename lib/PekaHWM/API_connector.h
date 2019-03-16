@@ -13,13 +13,16 @@ const size_t MAX_RESPONSE_SIZE = 4097;
 const unsigned long SECOND_MS = 1000;
 const unsigned long BOLLARD_RELOAD_BREAK = 60 * SECOND_MS;
 
-// methods
+// API connection methods 
 bool isReloadNeeded(bool wasPressed, unsigned long lastPress);
 int reloadBollard(String symbol, JsonDocument& response);
 
+// display methods. TODO pack it to class
 void displaySetup();
 void displaySetupDone();
 void displayResponse(JsonDocument& response);
+void displayLoading(String symbol);
+void displayLoadingFailed(String symbol);
 
 
 #endif /* API_CONNECTOR_H */

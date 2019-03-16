@@ -60,10 +60,10 @@ void loop()
   
   	if (isReloadNeeded(wasPressed, prevReload)) {
       	if ((WiFiMulti.run() == WL_CONNECTED)) {
-			// TODO displayLoading()
 			auto start = millis();
       		Serial.printf("[%lu] Loading bollard info for ", start);
-			Serial.println(symbol);
+			Serial.println(symbol); 
+			displayLoading(symbol);
       
 			int statusCode = reloadBollard(symbol, response);
 			yield();
@@ -75,7 +75,8 @@ void loop()
 		
 			Serial.printf("[%lu] Loading done\n", millis());
     	} else {
-      		Serial.printf("[WARN] Load rRequest omited, wifi not connected\n");
+      		Serial.printf("[WARN] Load request omited, wifi not connected\n");
+			displayLoadingFailed(symbol);
     	} 
     	wasPressed = false;
   	}

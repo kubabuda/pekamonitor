@@ -17,7 +17,7 @@ const int displayLinesCount = 6; // how many lines of text fits on display
 void displayCleanup() {
     oled.clear(ALL); // Clear the display's internal memory
     oled.clear(PAGE); // Clear the buffer.
-    oled.setCursor(0, 0);    
+    oled.setCursor(0, 0);
 }
 
 void displaySetup() {
@@ -41,6 +41,18 @@ void displaySetupDone() {
 	oled.println("  Setup");
 	oled.println("  done.");
 	
+	oled.display();
+}
+
+
+void displayLoading(String symbol) {
+	displayCleanup();
+	
+	oled.setCursor(0, 3);
+	oled.println("Loading");
+	oled.println(symbol);
+	oled.println("...");
+
 	oled.display();
 }
 
@@ -82,3 +94,16 @@ void displayResponse(JsonDocument& response) {
 
     oled.display();
 }
+
+
+void displayLoadingFailed(String symbol) {
+	displayCleanup();
+	
+	oled.println(" ");
+	oled.println(" ");
+	oled.println("Loading");
+	oled.println(symbol);
+	oled.println("failed!");
+
+	oled.display();
+};
