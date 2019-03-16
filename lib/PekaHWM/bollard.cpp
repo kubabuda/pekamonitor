@@ -18,9 +18,16 @@ void setButtonPressed(bool newValue) {
 }
 
 
-bool isReloadNeeded() {
-    auto result = wasManuallyTriggered() || millis() > prevReloadTimestamp + BOLLARD_RELOAD_BREAK;
-
+reload_state isReloadNeeded() {
+	reload_state result = RELOAD_NOT_NEEDED;
+	
+	if (wasManuallyTriggered()) {
+		result = RELOAD_TRIGGERED;
+	} else if (millis() > prevReloadTimestamp + BOLLARD_RELOAD_BREAK)
+	{
+		result = RELOAD_REFRESH;
+	}
+	
     if(result) {
         setButtonPressed(false);
     }

@@ -48,13 +48,17 @@ void setup()
 void loop()
 {
 	String symbol = getCurrentBollard();
-  
-  	if (isReloadNeeded()) {
+  	reload_state next_action = isReloadNeeded();
+  	
+	if (next_action) {
       	if ((WiFiMulti.run() == WL_CONNECTED)) {
 			auto start = millis();
       		Serial.printf("[%lu] Loading bollard info for ", start);
 			Serial.println(symbol); 
-			displayLoading(symbol);
+			
+			if (next_action == RELOAD_TRIGGERED) {
+				displayLoading(symbol);
+			}
       
 			int statusCode = reloadBollard(symbol, response);
 			yield();

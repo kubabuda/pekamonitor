@@ -15,8 +15,15 @@ const unsigned long SECOND_MS = 1000;
 const unsigned long BOLLARD_RELOAD_BREAK = 60 * SECOND_MS;
 
 
+enum reload_state {
+	RELOAD_NOT_NEEDED = 0,
+	RELOAD_REFRESH,
+	RELOAD_TRIGGERED
+} typedef reload_state;
+
+
 // control flow control methods
-bool isReloadNeeded();
+reload_state isReloadNeeded();
 void setLastReloadTimestamp(unsigned long last);
 
 // API connection methods 
