@@ -60,6 +60,7 @@ void loop()
   
   	if (isReloadNeeded(wasPressed, prevReload)) {
       	if ((WiFiMulti.run() == WL_CONNECTED)) {
+			// TODO displayLoading()
 			auto start = millis();
       		Serial.printf("[%lu] Loading bollard info for ", start);
 			Serial.println(symbol);
