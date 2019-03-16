@@ -3,7 +3,6 @@
 #include <ESP8266WiFiMulti.h>
 #include <ESPRotary.h>
 #include "API_connector.h"
-#include "PEKA_models.h"
 #include "secrets.h" // const char* ssid, password are outside Git. Change lib/Secrets/_secret.h name and values
 
 
@@ -14,16 +13,11 @@ StaticJsonDocument<MAX_RESPONSE_SIZE> response;
 const int clkPin = D7;	 // CLK
 const int dtPin = D4; 	  // DT
 const int buttonPin = D3; // SW
-volatile bool wasPressed = false;
 
 ESPRotary rotary = ESPRotary(dtPin, clkPin);
 
 
 // methods declarations
-void reloadCurrentBollard();
-void incrementCurrentBollard(ESPRotary& r);
-void decrementCurrentBollard(ESPRotary& r);
-
 
 void setup()
 {
@@ -49,17 +43,13 @@ void setup()
 }
 
 
-String getCurrentBollard() {
-	return bollards[currentBollard].symbol;
-}
-
 void loop()
 {
-	static volatile unsigned long prevReload = 0;
-  	String symbol = getCurrentBollard();
+	String symbol = getCurrentBollard();
   
-  	if (isReloadNeeded(wasPressed, prevReload)) {
-      	if ((WiFiMulti.run() == WL_CONNECTED)) {
+  	if (isReloadNeeded()) {
+      	// if ((WiFiMulti.run() == WL_CONNECTED)) {
+		if (true) {
 			auto start = millis();
       		Serial.printf("[%lu] Loading bollard info for ", start);
 			Serial.println(symbol); 
@@ -70,7 +60,7 @@ void loop()
 			
 			if(statusCode > 0) {
 				displayResponse(response);
-				prevReload = start;
+				setLastReloadTimestamp(start);
 			} else
 			{
 				displayLoadingFailed(symbol);
@@ -80,60 +70,8 @@ void loop()
     	} else {
       		Serial.printf("[WARN] Load request omited, wifi not connected\n");
 			// todo display WiFi conn problem
-    	} 
-    	wasPressed = false;
+    	}
   	}
 
 	rotary.loop();
-}
-
-
-static volatile uint32_t prev = 0;
-const uint32_t debounce_time_ms = 200;
-
-
-void incrementCurrentBollard(ESPRotary& r) {
-	auto now = millis();
-	
-	if (now > prev + debounce_time_ms) {
-		prev = now;
-		wasPressed = true;
-		
-		++currentBollard;
-		currentBollard %= bollardsCount;
-
-		Serial.printf("[%lu] Switching bollard # up to ", now);
-		Serial.println(getCurrentBollard());
-	}
-}
-
-
-void reloadCurrentBollard() {
-	auto now = millis();
-	
-	if (now > prev + debounce_time_ms) {
-		prev = now;
-		wasPressed = true;
-		
-		Serial.printf("[%lu] Reloading bollard info for ", now);
-		Serial.println(getCurrentBollard());
-	}	
-}
-
-
-void decrementCurrentBollard(ESPRotary& r) {
-	auto now = millis();
-	
-	if (now > prev + debounce_time_ms) {
-		prev = now;
-		wasPressed = true;
-
-		--currentBollard;
-		if (currentBollard < 0) {
-			currentBollard = bollardsCount - 1;
-		}
-
-		Serial.printf("[%lu] Switching bollard # down to ", now);
-		Serial.println(getCurrentBollard());
-	}
 }

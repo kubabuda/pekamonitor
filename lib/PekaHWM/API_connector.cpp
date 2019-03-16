@@ -8,6 +8,7 @@ String getPayload(String symbol) {
   return payload;
 }
 
+
 int connect_dummy(String symbol, JsonDocument& response) {
     // pretend connection, read from hardcoded JSON
     const String responsePayload = "{\"success\":\{\"bollard\":{\"symbol\":\"RKAP71\",\"tag\":\"RKAP01\",\"name\":\"Rondo Kaponiera\",\"mainBollard\":false},\"times\":[{\"realTime\":false,\"minutes\":13,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:21:00.000Z\",\"line\":\"249\"},{\"realTime\":true,\"minutes\":16,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:24:00.000Z\",\"line\":\"232\"},{\"realTime\":true,\"minutes\":17,\"direction\":\"Rondo Kaponiera\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:25:00.000Z\",\"line\":\"238\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Szwajcarska Szpital\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"232\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Szwajcarska Szpital\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"238\"},{\"realTime\":false,\"minutes\":22,\"direction\":\"Dębiec\",\"onStopPoint\":false,\"departure\":\"2019-03-12T00:30:00.000Z\",\"line\":\"249\"}]}}";
@@ -20,10 +21,12 @@ int connect_dummy(String symbol, JsonDocument& response) {
         return -1;
     }
 
-    return 0;
+    return 1;
 }
 
+
 int reloadBollard(String symbol, JsonDocument& response) {
+    return connect_dummy(symbol, response); // for GUI test
     int result = -1;
     std::unique_ptr<BearSSL::WiFiClientSecure>client(new BearSSL::WiFiClientSecure);
 
@@ -50,7 +53,7 @@ int reloadBollard(String symbol, JsonDocument& response) {
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
                                 
                 // deserializing stream by ArduinoJSON is not supported on ESP8266
-                String responsePayload = https.getString();    
+                String responsePayload = https.getString();
                 // deserialize JSON response
                 DeserializationError error = deserializeJson(response, responsePayload);
                 if (error) {
@@ -71,10 +74,4 @@ int reloadBollard(String symbol, JsonDocument& response) {
     }
 
     return result;
-}
-
-
-bool isReloadNeeded(bool wasTriggered, unsigned long lastPress) {
-
-    return wasTriggered || millis() > lastPress + BOLLARD_RELOAD_BREAK;
 }
