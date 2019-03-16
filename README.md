@@ -7,11 +7,17 @@ This is repo for hardware counterpart for PEKA Virtual Monitor for home use, wit
 - WeMos ESP8266:
 - Micro OLED shield
 - Rotary encoder:
+
 ## Connections
-- OLED shield over I2C - no jumper - 0x3C
-- rotary CLK - D3
-- rotary DT - D2
-- rotary Sw - D1
+
+OLED shield over I2C - no jumper - 0x3C
+- SCL - D1
+- SDA - D2 
+
+Rotary
+- rotary CLK - D7
+- rotary DT - D4
+- rotary Sw - D3
 
 
 # VM API 
@@ -55,10 +61,7 @@ Format required by BearSSL::WiFiClientSecure is
 
 # TODO
 - Setup OTA, debugger
-- load realtime from external service
-- Bigger OLED
-- create timer interrupt and run encoder loop in it 
-- or find library that will work with long POST in loops
+- load realtime from external NTP service to log it: https://www.geekstips.com/arduino-time-sync-ntp-server-esp8266-udp/, https://www.pool.ntp.org/zone/pl
 - Create bollard monitor data structure for bollard info so parsing and displaying is decoupled, so display refresh can be faster (no waiting for parsing, serial printing...)
 - Update all bollard monitors in background so switch is instant
 - Make selected bollard persistent - store current bollard # in EEPROM
