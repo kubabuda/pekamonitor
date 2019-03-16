@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
+#include <ESPRotary.h>
 #include "API_connector.h"
 #include "PEKA_models.h"
 #include "secrets.h" // const char* ssid, password are outside Git. Change lib/Secrets/_secret.h name and values
@@ -10,13 +11,18 @@ ESP8266WiFiMulti WiFiMulti;
 
 StaticJsonDocument<MAX_RESPONSE_SIZE> response;
 
-const int buttonPin = D3;
+const int clkPin = D3;
+const int dtPin = D2;
+const int buttonPin = D1;
 volatile bool wasPressed = false;
+
+ESPRotary rotary = ESPRotary(D3, D2);
 
 
 // methods declarations
-void incrementCurrentBollard();
-void decrementCurrentBollard();
+void reloadCurrentBollard();
+void incrementCurrentBollard(ESPRotary& r);
+void decrementCurrentBollard(ESPRotary& r);
 
 
 void setup()
@@ -34,43 +40,54 @@ void setup()
 	Serial.println("finished");
 	
 	pinMode(buttonPin, INPUT); // TODO use internal pullup to omit ext resistor
-	attachInterrupt(digitalPinToInterrupt(buttonPin), incrementCurrentBollard, RISING);
+	attachInterrupt(digitalPinToInterrupt(buttonPin), reloadCurrentBollard, FALLING);
 	
+	rotary.setLeftRotationHandler(decrementCurrentBollard);
+  	rotary.setRightRotationHandler(incrementCurrentBollard);
+
 	displaySetupDone();
+}
+
+
+String getCurrentBollard() {
+	return bollards[currentBollard].symbol;
 }
 
 void loop()
 {
 	static volatile unsigned long prevReload = 0;
-  	String symbol = bollards[currentBollard].symbol;
+  	String symbol = getCurrentBollard();
   
   	if (isReloadNeeded(wasPressed, prevReload)) {
       	if ((WiFiMulti.run() == WL_CONNECTED)) {
 			auto start = millis();
-      		Serial.printf("[%lu] Reloading bollard info for ", start);
+      		Serial.printf("[%lu] Loading bollard info for ", start);
 			Serial.println(symbol);
       
-			int statusCode = reloadBollard(symbol, response);
-			yield();
+			// int statusCode = reloadBollard(symbol, response);
+			// yield();
 			
-			if(statusCode > 0) {
-				displayResponse(response);
+			// if(statusCode > 0) {
+			// 	displayResponse(response);
 				prevReload = start;
-			}
+			// }
 		
-			Serial.printf("[%lu] Reload done\n", millis());
+			Serial.printf("[%lu] Loading done\n", millis());
     	} else {
-      		Serial.printf("[WARN] Request omited, wifi not connected\n");
+      		Serial.printf("[WARN] Load rRequest omited, wifi not connected\n");
     	} 
     	wasPressed = false;
   	}
+
+	rotary.loop();
 }
 
 
 static volatile uint32_t prev = 0;
 const uint32_t debounce_time_ms = 200;
 
-void incrementCurrentBollard() {
+
+void incrementCurrentBollard(ESPRotary& r) {
 	auto now = millis();   // TODO there must be lib for this
 	
 	if (now > prev + debounce_time_ms) { // TODO add guard
@@ -81,7 +98,13 @@ void incrementCurrentBollard() {
 	}
 }
 
-void decrementCurrentBollard() {
+
+void reloadCurrentBollard() {
+	
+}
+
+
+void decrementCurrentBollard(ESPRotary& r) {
 	auto now = millis();   // TODO there must be lib for this
 	
 	if (now > prev + debounce_time_ms) { // TODO add guard
