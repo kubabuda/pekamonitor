@@ -16,7 +16,7 @@ const int dtPin = D2;
 const int buttonPin = D1;
 volatile bool wasPressed = false;
 
-ESPRotary rotary = ESPRotary(D3, D2);
+ESPRotary rotary = ESPRotary(D2, D3);
 
 
 // methods declarations
@@ -39,7 +39,7 @@ void setup()
 	WiFiMulti.addAP(ssid, password);	
 	Serial.println("finished");
 	
-	pinMode(buttonPin, INPUT); // TODO use internal pullup to omit ext resistor
+	pinMode(buttonPin, INPUT);
 	attachInterrupt(digitalPinToInterrupt(buttonPin), reloadCurrentBollard, FALLING);
 	
 	rotary.setLeftRotationHandler(decrementCurrentBollard);
@@ -64,13 +64,13 @@ void loop()
       		Serial.printf("[%lu] Loading bollard info for ", start);
 			Serial.println(symbol);
       
-			// int statusCode = reloadBollard(symbol, response);
-			// yield();
+			int statusCode = reloadBollard(symbol, response);
+			yield();
 			
-			// if(statusCode > 0) {
-			// 	displayResponse(response);
+			if(statusCode > 0) {
+				displayResponse(response);
 				prevReload = start;
-			// }
+			}
 		
 			Serial.printf("[%lu] Loading done\n", millis());
     	} else {
