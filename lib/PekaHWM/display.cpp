@@ -49,9 +49,10 @@ void displayLoading(String symbol) {
 	displayCleanup();
 	
 	oled.setCursor(0, 3);
-	oled.println("Loading");
+	oled.println("  Loading");
+	oled.print("  ");
 	oled.println(symbol);
-	oled.println("...");
+	oled.println("   ...");
 
 	oled.display();
 }
@@ -101,9 +102,10 @@ void displayLoadingFailed(String symbol) {
 	
 	oled.println(" ");
 	oled.println(" ");
-	oled.println("Loading");
+	oled.println("  Loading");
+	oled.print("  ");
 	oled.println(symbol);
-	oled.println("failed!");
+	oled.println("  failed!");
 
 	oled.display();
 };

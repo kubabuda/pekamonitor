@@ -71,12 +71,15 @@ void loop()
 			if(statusCode > 0) {
 				displayResponse(response);
 				prevReload = start;
+			} else
+			{
+				displayLoadingFailed(symbol);
 			}
-		
+			
 			Serial.printf("[%lu] Loading done\n", millis());
     	} else {
       		Serial.printf("[WARN] Load request omited, wifi not connected\n");
-			displayLoadingFailed(symbol);
+			// todo display WiFi conn problem
     	} 
     	wasPressed = false;
   	}
