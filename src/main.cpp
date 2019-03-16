@@ -88,31 +88,47 @@ const uint32_t debounce_time_ms = 200;
 
 
 void incrementCurrentBollard(ESPRotary& r) {
-	auto now = millis();   // TODO there must be lib for this
+	auto now = millis();
 	
-	if (now > prev + debounce_time_ms) { // TODO add guard
+	if (now > prev + debounce_time_ms) {
 		prev = now;
+		wasPressed = true;
+		
 		++currentBollard;
 		currentBollard %= bollardsCount;
-		wasPressed = true;
+
+		Serial.printf("[%lu] Switching bollard # up to ", now);
+		Serial.println(getCurrentBollard());
 	}
 }
 
 
 void reloadCurrentBollard() {
+	auto now = millis();
 	
+	if (now > prev + debounce_time_ms) {
+		prev = now;
+		wasPressed = true;
+		
+		Serial.printf("[%lu] Reloading bollard info for ", now);
+		Serial.println(getCurrentBollard());
+	}	
 }
 
 
 void decrementCurrentBollard(ESPRotary& r) {
-	auto now = millis();   // TODO there must be lib for this
+	auto now = millis();
 	
-	if (now > prev + debounce_time_ms) { // TODO add guard
+	if (now > prev + debounce_time_ms) {
 		prev = now;
+		wasPressed = true;
+
 		--currentBollard;
 		if (currentBollard < 0) {
 			currentBollard = bollardsCount - 1;
-		}  
-		wasPressed = true;
+		}
+
+		Serial.printf("[%lu] Switching bollard # down to ", now);
+		Serial.println(getCurrentBollard());
 	}
 }

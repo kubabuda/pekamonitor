@@ -54,7 +54,6 @@ Format required by BearSSL::WiFiClientSecure is
 ```
 
 # TODO
-- Rotary encoder
 - Setup OTA, debugger
 - Bigger OLED
 - Create bollard monitor data structure for bollard info so parsing and displaying is decoupled, so display refresh can be faster (no waiting for parsing, serial printing...)
