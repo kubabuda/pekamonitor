@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <ESPRotary.h>
+#include <Ticker.h>
 #include "API_connector.h"
 #include "secrets.h" // const char* ssid, password are outside Git. Change lib/Secrets/_secret.h name and values
 
@@ -16,8 +17,12 @@ const int buttonPin = D3; // SW
 
 ESPRotary rotary = ESPRotary(dtPin, clkPin);
 
+Ticker blinker;
+
 
 // methods declarations
+void rotary_loop();
+
 
 void setup()
 {
@@ -38,18 +43,21 @@ void setup()
 	
 	rotary.setLeftRotationHandler(decrementCurrentBollard);
   	rotary.setRightRotationHandler(incrementCurrentBollard);
+    blinker.attach(0.01, rotary_loop); //Use <strong>attach_ms</strong> if you need time in ms
 
 	displaySetupDone();
 }
 
+void rotary_loop() {
+	rotary.loop();
+}
 
 void loop()
 {
 	String symbol = getCurrentBollard();
   
   	if (isReloadNeeded()) {
-      	// if ((WiFiMulti.run() == WL_CONNECTED)) {
-		if (true) {
+      	if ((WiFiMulti.run() == WL_CONNECTED)) {
 			auto start = millis();
       		Serial.printf("[%lu] Loading bollard info for ", start);
 			Serial.println(symbol); 
@@ -72,6 +80,5 @@ void loop()
 			// todo display WiFi conn problem
     	}
   	}
-
-	rotary.loop();
 }
+
