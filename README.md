@@ -56,7 +56,7 @@ Format required by BearSSL::WiFiClientSecure is
 # TODO
 - Setup OTA, debugger
 - Bigger OLED
-- Change encoder connection: D1 D2 are used by I2C
+- properly debounce encoder or find library that will work with long POST in loops
 - "loading" splashscreen / marker
 - Create bollard monitor data structure for bollard info so parsing and displaying is decoupled, so display refresh can be faster (no waiting for parsing, serial printing...)
 - Update all bollard monitors in background so switch is instant

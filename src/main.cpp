@@ -11,12 +11,12 @@ ESP8266WiFiMulti WiFiMulti;
 
 StaticJsonDocument<MAX_RESPONSE_SIZE> response;
 
-const int clkPin = D3;
-const int dtPin = D2;
-const int buttonPin = D1;
+const int clkPin = D7;	 // CLK
+const int dtPin = D4; 	  // DT
+const int buttonPin = D3; // SW
 volatile bool wasPressed = false;
 
-ESPRotary rotary = ESPRotary(D2, D3);
+ESPRotary rotary = ESPRotary(dtPin, clkPin);
 
 
 // methods declarations
