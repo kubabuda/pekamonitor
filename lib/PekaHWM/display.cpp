@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <Wire.h>    // Include Wire for using I2C
-// #include <SFE_MicroOLED.h>  // Include the SFE_MicroOLED library
 #include "API_connector.h"
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -11,71 +10,107 @@
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
-Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
-//The library assumes a reset pin is necessary. The Qwiic OLED has RST hard-wired, so pick an arbitrarty IO pin that is not being used
-#define PIN_RESET 255  
-//The DC_JUMPER is the I2C Address Select jumper. Set to 1 if the jumper is open (Default), or set to 0 if it's closed.
-#define DC_JUMPER 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const int displayLinesCount = 6; // how many lines of text fits on display
 
 void displayCleanup() {
-    oled.clearDisplay(); // Clear the display's internal memory
-    // oled.(PAGE); // Clear the buffer.
-    oled.setCursor(0, 0);
+    display.clearDisplay();
+    display.setCursor(0, 0);
 }
 
 void displaySetup() {
-	// Wire.begin();	// TODO benchmark and compare with SPI
-	
 	// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-	if(!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
+	if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
 		Serial.println(F("SSD1306 allocation failed"));
 		for(;;); // Don't proceed, loop forever
 	}
 
 	// Show initial display buffer contents on the screen --
 	// the library initializes this with an Adafruit splash screen.
-	oled.display();
+	display.display();
 	delay(2000); // Pause for 2 seconds
 
-	// oled.begin();   // Initialize the OLED
-	displayCleanup();
+	Serial.printf("SSD1306 started OK with screen %dx%d\r\n",display.width(), display.height());
+
+	display.clearDisplay();
 	
-	oled.println("");
-	oled.println("PEKA HWM");
-	oled.println("");
-	oled.println("start...");
+	display.drawRect(
+		0,
+		0,
+		display.width(),
+		display.height(),
+		WHITE );
+	display.display();
+	display.setTextSize( 1 );
 	
-	oled.display();
+	display.setCursor( 2, 0);
+	display.println("Witajcie");
+	
+	display.setCursor( 2, 1);
+	display.print("Witajcie");
+
+	display.setCursor( 2, 2);
+	display.printf("Witajcie");
+
+	display.setCursor( 2, 4);
+	display.printf_P("Witajcie");
+	
+	display.display();
+	
+	// display.setCursor(5, 5); 
+	// display.setCursor(5, 6);
+	// display.print("start...");
+	Serial.printf("SSD should display hello world now");
+	// display.display();
+	delay(2000); // Pause for 2 seconds
 }
 
 void displaySetupDone() {
 	displayCleanup();
 
-	oled.println("");
-	oled.println("");
-	oled.println("  Setup");
-	oled.println("  done.");
+	display.setCursor(5, 5);
+	display.println("Setup");
+	display.setCursor(5, 6);
+	display.println("  done.");
 	
-	oled.display();
+	display.display();
 }
 
 
 void displayLoading(String symbol) {
 	displayCleanup();
 	
-	oled.println("");
-	oled.println("");
-	oled.println("  Loading");
-	oled.print("  ");
-	oled.println(symbol);
-	oled.println("   ...");
+	display.setCursor(5, 5); 
+	display.println("  Loading");
+	display.setCursor(5, 6); 
+	display.println(symbol);
+	display.setCursor(5, 7);
+	display.println("   ...");
 
-	oled.display();
+	display.display();
 }
 
 
@@ -87,7 +122,7 @@ void displayResponse(JsonDocument& response) {
     // parse display monitor header
 	Serial.printf("Przystanek %s\n %s", symbol, name);
 	displayCleanup();
-	oled.println(symbol);
+	display.print(symbol);
 
     // iterate over departure times
     JsonArray times = response["success"]["times"].as<JsonArray>();
@@ -105,28 +140,29 @@ void displayResponse(JsonDocument& response) {
             realTime ? "" : " [wg rozkladu]");
 		// display deaparture time details on display
 		if(lineNo <= displayLinesCount) {
-			oled.print(line);
-			oled.print(" - ");
-			oled.print(minutes);
-			oled.println(realTime ? "m" : "*");
+			display.setCursor(6, lineNo);
+			display.print(line);
+			display.print(" - ");
+			display.print(minutes);
+			display.println(realTime ? "m" : "*");
 		}
 
         yield();
     }
 
-    oled.display();
+    display.display();
 }
 
 
 void displayLoadingFailed(String symbol) {
 	displayCleanup();
 	
-	oled.println("");
-	oled.println("");
-	oled.println("  Loading");
-	oled.print("  ");
-	oled.println(symbol);
-	oled.println("  failed!");
+	display.println("");
+	display.println("");
+	display.println("  Loading");
+	display.print("  ");
+	display.println(symbol);
+	display.println("  failed!");
 
-	oled.display();
+	display.display();
 };
