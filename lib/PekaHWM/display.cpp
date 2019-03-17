@@ -6,6 +6,7 @@
 #include <Adafruit_SSD1306.h>
 
 
+#define I2C_ADDRESS 	0x3C
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
@@ -37,175 +38,6 @@ static const unsigned char PROGMEM logo_bmp[] =
   B00000000, B00110000 };
 
 
-void testdrawline() {
-  int16_t i;
-
-  display.clearDisplay(); // Clear display buffer
-
-  for(i=0; i<display.width(); i+=4) {
-    display.drawLine(0, 0, i, display.height()-1, WHITE);
-    display.display(); // Update screen with each newly-drawn line
-    delay(1);
-  }
-  for(i=0; i<display.height(); i+=4) {
-    display.drawLine(0, 0, display.width()-1, i, WHITE);
-    display.display();
-    delay(1);
-  }
-  delay(250);
-
-  display.clearDisplay();
-
-  for(i=0; i<display.width(); i+=4) {
-    display.drawLine(0, display.height()-1, i, 0, WHITE);
-    display.display();
-    delay(1);
-  }
-  for(i=display.height()-1; i>=0; i-=4) {
-    display.drawLine(0, display.height()-1, display.width()-1, i, WHITE);
-    display.display();
-    delay(1);
-  }
-  delay(250);
-
-  display.clearDisplay();
-
-  for(i=display.width()-1; i>=0; i-=4) {
-    display.drawLine(display.width()-1, display.height()-1, i, 0, WHITE);
-    display.display();
-    delay(1);
-  }
-  for(i=display.height()-1; i>=0; i-=4) {
-    display.drawLine(display.width()-1, display.height()-1, 0, i, WHITE);
-    display.display();
-    delay(1);
-  }
-  delay(250);
-
-  display.clearDisplay();
-
-  for(i=0; i<display.height(); i+=4) {
-    display.drawLine(display.width()-1, 0, 0, i, WHITE);
-    display.display();
-    delay(1);
-  }
-  for(i=0; i<display.width(); i+=4) {
-    display.drawLine(display.width()-1, 0, i, display.height()-1, WHITE);
-    display.display();
-    delay(1);
-  }
-
-  delay(2000); // Pause for 2 seconds
-}
-
-
-void testdrawrect(void) {
-  display.clearDisplay();
-
-  for(int16_t i=0; i<display.height()/2; i+=2) {
-    display.drawRect(i, i, display.width()-2*i, display.height()-2*i, WHITE);
-    display.display(); // Update screen with each newly-drawn rectangle
-    delay(1);
-  }
-
-  delay(2000);
-}
-
-void testfillrect(void) {
-  display.clearDisplay();
-
-  for(int16_t i=0; i<display.height()/2; i+=3) {
-    // The INVERSE color is used so rectangles alternate white/black
-    display.fillRect(i, i, display.width()-i*2, display.height()-i*2, INVERSE);
-    display.display(); // Update screen with each newly-drawn rectangle
-    delay(1);
-  }
-
-  delay(2000);
-}
-
-void testdrawcircle(void) {
-  display.clearDisplay();
-
-  for(int16_t i=0; i<max(display.width(),display.height())/2; i+=2) {
-    display.drawCircle(display.width()/2, display.height()/2, i, WHITE);
-    display.display();
-    delay(1);
-  }
-
-  delay(2000);
-}
-
-void testfillcircle(void) {
-  display.clearDisplay();
-
-  for(int16_t i=max(display.width(),display.height())/2; i>0; i-=3) {
-    // The INVERSE color is used so circles alternate white/black
-    display.fillCircle(display.width() / 2, display.height() / 2, i, INVERSE);
-    display.display(); // Update screen with each newly-drawn circle
-    delay(1);
-  }
-
-  delay(2000);
-}
-
-void testdrawroundrect(void) {
-  display.clearDisplay();
-
-  for(int16_t i=0; i<display.height()/2-2; i+=2) {
-    display.drawRoundRect(i, i, display.width()-2*i, display.height()-2*i,
-      display.height()/4, WHITE);
-    display.display();
-    delay(1);
-  }
-
-  delay(2000);
-}
-
-void testfillroundrect(void) {
-  display.clearDisplay();
-
-  for(int16_t i=0; i<display.height()/2-2; i+=2) {
-    // The INVERSE color is used so round-rects alternate white/black
-    display.fillRoundRect(i, i, display.width()-2*i, display.height()-2*i,
-      display.height()/4, INVERSE);
-    display.display();
-    delay(1);
-  }
-
-  delay(2000);
-}
-
-void testdrawtriangle(void) {
-  display.clearDisplay();
-
-  for(int16_t i=0; i<max(display.width(),display.height())/2; i+=5) {
-    display.drawTriangle(
-      display.width()/2  , display.height()/2-i,
-      display.width()/2-i, display.height()/2+i,
-      display.width()/2+i, display.height()/2+i, WHITE);
-    display.display();
-    delay(1);
-  }
-
-  delay(2000);
-}
-
-void testfilltriangle(void) {
-  display.clearDisplay();
-
-  for(int16_t i=max(display.width(),display.height())/2; i>0; i-=5) {
-    // The INVERSE color is used so triangles alternate white/black
-    display.fillTriangle(
-      display.width()/2  , display.height()/2-i,
-      display.width()/2-i, display.height()/2+i,
-      display.width()/2+i, display.height()/2+i, INVERSE);
-    display.display();
-    delay(1);
-  }
-
-  delay(2000);
-}
 
 void testdrawchar(void) {
   display.clearDisplay();
@@ -272,147 +104,6 @@ void testscrolltext(void) {
   delay(1000);
 }
 
-void testdrawbitmap(void) {
-  display.clearDisplay();
-
-  display.drawBitmap(
-    (display.width()  - LOGO_WIDTH ) / 2,
-    (display.height() - LOGO_HEIGHT) / 2,
-    logo_bmp, LOGO_WIDTH, LOGO_HEIGHT, 1);
-  display.display();
-  delay(1000);
-}
-
-#define XPOS   0 // Indexes into the 'icons' array in function below
-#define YPOS   1
-#define DELTAY 2
-
-void testanimate(const uint8_t *bitmap, uint8_t w, uint8_t h) {
-  int8_t f, icons[NUMFLAKES][3];
-
-  // Initialize 'snowflake' positions
-  for(f=0; f< NUMFLAKES; f++) {
-    icons[f][XPOS]   = random(1 - LOGO_WIDTH, display.width());
-    icons[f][YPOS]   = -LOGO_HEIGHT;
-    icons[f][DELTAY] = random(1, 6);
-    Serial.print(F("x: "));
-    Serial.print(icons[f][XPOS], DEC);
-    Serial.print(F(" y: "));
-    Serial.print(icons[f][YPOS], DEC);
-    Serial.print(F(" dy: "));
-    Serial.println(icons[f][DELTAY], DEC);
-  }
-
-  for(;;) { // Loop forever...
-    display.clearDisplay(); // Clear the display buffer
-
-    // Draw each snowflake:
-    for(f=0; f< NUMFLAKES; f++) {
-      display.drawBitmap(icons[f][XPOS], icons[f][YPOS], bitmap, w, h, WHITE);
-    }
-
-    display.display(); // Show the display buffer on the screen
-    delay(200);        // Pause for 1/10 second
-
-    // Then update coordinates of each flake...
-    for(f=0; f< NUMFLAKES; f++) {
-      icons[f][YPOS] += icons[f][DELTAY];
-      // If snowflake is off the bottom of the screen...
-      if (icons[f][YPOS] >= display.height()) {
-        // Reinitialize to a random position, just off the top
-        icons[f][XPOS]   = random(1 - LOGO_WIDTH, display.width());
-        icons[f][YPOS]   = -LOGO_HEIGHT;
-        icons[f][DELTAY] = random(1, 6);
-      }
-    }
-  }
-}
-
-void setupMe() {
-	Serial.println(F("SSD1306 allocation start!"));
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
-  }
-	// display.begin(SSD1306_SWITCHCAPVCC, 0x3C, FALSE);
-	Serial.println(F("SSD1306 allocation done!"));
-  // Show initial display buffer contents on the screen --
-  // the library initializes this with an Adafruit splash screen.
-  display.display();
-  delay(2000); // Pause for 2 seconds
-
-  // Clear the buffer
-  display.clearDisplay();
-
-  // Draw a single pixel in white
-  display.drawPixel(10, 10, WHITE);
-
-  // Show the display buffer on the screen. You MUST call display() after
-  // drawing commands to make them visible on screen!
-  display.display();
-  delay(2000);
-  // display.display() is NOT necessary after every single drawing command,
-  // unless that's what you want...rather, you can batch up a bunch of
-  // drawing operations and then update the screen all at once by calling
-  // display.display(). These examples demonstrate both approaches...
-
-  testdrawline();      // Draw many lines
-
-  testdrawrect();      // Draw rectangles (outlines)
-
-  testfillrect();      // Draw rectangles (filled)
-
-  testdrawcircle();    // Draw circles (outlines)
-
-  testfillcircle();    // Draw circles (filled)
-
-  testdrawroundrect(); // Draw rounded rectangles (outlines)
-
-  testfillroundrect(); // Draw rounded rectangles (filled)
-
-  testdrawtriangle();  // Draw triangles (outlines)
-
-  testfilltriangle();  // Draw triangles (filled)
-
-  testdrawchar();      // Draw characters of the default font
-
-  testdrawstyles();    // Draw 'stylized' characters
-
-  testscrolltext();    // Draw scrolling text
-
-  testdrawbitmap();    // Draw a small bitmap image
-
-  // Invert and restore display, pausing in-between
-  display.invertDisplay(true);
-  delay(1000);
-  display.invertDisplay(false);
-  delay(1000);
-
-  testanimate(logo_bmp, LOGO_WIDTH, LOGO_HEIGHT); // Animate bitmaps
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const int displayLinesCount = 6; // how many lines of text fits on display
 
@@ -422,54 +113,59 @@ void displayCleanup() {
 }
 
 void displaySetup() {
-	setupMe();
-	return;
-
-
-	// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-	if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
+	  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+	if(!display.begin(SSD1306_SWITCHCAPVCC, I2C_ADDRESS, false)) {
 		Serial.println(F("SSD1306 allocation failed"));
 		for(;;); // Don't proceed, loop forever
 	}
 
-	// Show initial display buffer contents on the screen --
-	// the library initializes this with an Adafruit splash screen.
-	display.display();
-	delay(2000); // Pause for 2 seconds
+	testdrawchar();      // Draw characters of the default font
+	delay(2000);
 
-	Serial.printf("SSD1306 started OK with screen %dx%d\r\n",display.width(), display.height());
+	testdrawstyles();    // Draw 'stylized' characters
+	delay(2000);
+	
+	testscrolltext();    // Draw scrolling text
+	delay(2000);
 
-	display.clearDisplay();
-	
-	display.drawRect(
-		0,
-		0,
-		display.width(),
-		display.height(),
-		WHITE );
-	display.display();
-	display.setTextSize( 1 );
-	
-	display.setCursor( 2, 0);
-	display.println("Witajcie");
-	
-	display.setCursor( 2, 1);
-	display.print("Witajcie");
-
-	display.setCursor( 2, 2);
-	display.printf("Witajcie");
-
-	display.setCursor( 2, 4);
-	display.printf_P("Witajcie");
-	
-	display.display();
-	
-	// display.setCursor(5, 5); 
-	// display.setCursor(5, 6);
-	// display.print("start...");
-	Serial.printf("SSD should display hello world now");
+	// // Show initial display buffer contents on the screen --
+	// // the library initializes this with an Adafruit splash screen.
 	// display.display();
-	delay(2000); // Pause for 2 seconds
+	// delay(2000); // Pause for 2 seconds
+
+	// Serial.printf("SSD1306 started OK with screen %dx%d\r\n",display.width(), display.height());
+
+	// display.clearDisplay();
+	
+	// display.drawRect(
+	// 	0,
+	// 	0,
+	// 	display.width(),
+	// 	display.height(),
+	// 	WHITE );
+	// display.display();
+	// display.setTextSize( 1 );
+	
+	// display.setCursor( 2, 0);
+	// display.println("Witajcie");
+	
+	// display.setCursor( 2, 1);
+	// display.print("Witajcie");
+
+	// display.setCursor( 2, 2);
+	// display.printf("Witajcie");
+
+	// display.setCursor( 2, 4);
+	// display.printf_P("Witajcie");
+	
+	// display.display();
+	
+	// // display.setCursor(5, 5); 
+	// // display.setCursor(5, 6);
+	// // display.print("start...");
+	// Serial.printf("SSD should display hello world now");
+	// // display.display();
+	// delay(2000); // Pause for 2 seconds
 }
 
 void displaySetupDone() {
