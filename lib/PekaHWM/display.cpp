@@ -1,8 +1,17 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <Wire.h>    // Include Wire for using I2C
-#include <SFE_MicroOLED.h>  // Include the SFE_MicroOLED library
+// #include <SFE_MicroOLED.h>  // Include the SFE_MicroOLED library
 #include "API_connector.h"
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 //The library assumes a reset pin is necessary. The Qwiic OLED has RST hard-wired, so pick an arbitrarty IO pin that is not being used
@@ -10,19 +19,30 @@
 //The DC_JUMPER is the I2C Address Select jumper. Set to 1 if the jumper is open (Default), or set to 0 if it's closed.
 #define DC_JUMPER 0
 
-MicroOLED oled(PIN_RESET, DC_JUMPER);    // I2C declaration
 
 const int displayLinesCount = 6; // how many lines of text fits on display
 
 void displayCleanup() {
-    oled.clear(ALL); // Clear the display's internal memory
-    oled.clear(PAGE); // Clear the buffer.
+    oled.clearDisplay(); // Clear the display's internal memory
+    // oled.(PAGE); // Clear the buffer.
     oled.setCursor(0, 0);
 }
 
 void displaySetup() {
-	Wire.begin();	// TODO benchmark and compare with SPI
-	oled.begin();   // Initialize the OLED
+	// Wire.begin();	// TODO benchmark and compare with SPI
+	
+	// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+	if(!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
+		Serial.println(F("SSD1306 allocation failed"));
+		for(;;); // Don't proceed, loop forever
+	}
+
+	// Show initial display buffer contents on the screen --
+	// the library initializes this with an Adafruit splash screen.
+	oled.display();
+	delay(2000); // Pause for 2 seconds
+
+	// oled.begin();   // Initialize the OLED
 	displayCleanup();
 	
 	oled.println("");
