@@ -21,7 +21,7 @@ void testdrawchar(void) {
 	display.setTextSize(1);      // Normal 1:1 pixel scale
 	display.setTextColor(WHITE); // Draw white text
 	display.setCursor(0, 0);     // Start at top-left corner
-	display.cp437(true);         // Use full 256 char 'Code Page 437' font
+	// display.cp437(true);         // Use full 256 char 'Code Page 437' font
 
 	// Not all the characters will fit on the display. This is normal.
 	// Library will draw what it can and the rest will be clipped.
@@ -142,14 +142,13 @@ void displayLoading(String symbol) {
 
 
 void displayResponse(JsonDocument& response) {
-
     // parse monitor header
     const char* name =  response["success"]["bollard"]["name"];
 	const char* symbol =  response["success"]["bollard"]["symbol"];
     // parse display monitor header
   	Serial.printf("Przystanek %s\n %s", symbol, name);
-	  displayCleanup();
-	  display.print(symbol);
+	displayCleanup();
+	display.println(name);
 
     // iterate over departure times
     JsonArray times = response["success"]["times"].as<JsonArray>();
@@ -167,11 +166,10 @@ void displayResponse(JsonDocument& response) {
             realTime ? "" : " [wg rozkladu]");
 		// display deaparture time details on display
 		if(lineNo <= displayLinesCount) {
-			display.setCursor(6, lineNo);
-			display.print(line);
-			display.print(" - ");
-			display.print(minutes);
-			display.println(realTime ? "m" : "*");
+			const int lineHeight = 10;
+			display.setCursor(0, lineNo * lineHeight);
+			display.printf("%s - %s - %d", line, direction, minutes);
+			display.print(realTime ? "m" : "*");
 		}
 
         yield();
