@@ -15,30 +15,6 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
-#define NUMFLAKES     10 // Number of snowflakes in the animation example
-
-#define LOGO_HEIGHT   16
-#define LOGO_WIDTH    16
-static const unsigned char PROGMEM logo_bmp[] =
-{ B00000000, B11000000,
-  B00000001, B11000000,
-  B00000001, B11000000,
-  B00000011, B11100000,
-  B11110011, B11100000,
-  B11111110, B11111000,
-  B01111110, B11111111,
-  B00110011, B10011111,
-  B00011111, B11111100,
-  B00001101, B01110000,
-  B00011011, B10100000,
-  B00111111, B11100000,
-  B00111111, B11110000,
-  B01111100, B11110000,
-  B01110000, B01110000,
-  B00000000, B00110000 };
-
-
-
 void testdrawchar(void) {
   display.clearDisplay();
 
@@ -118,62 +94,24 @@ void displaySetup() {
 		Serial.println(F("SSD1306 allocation failed"));
 		for(;;); // Don't proceed, loop forever
 	}
+	display.clearDisplay();
 
-	testdrawchar();      // Draw characters of the default font
-	delay(2000);
+	display.setTextSize(1);      // Normal 1:1 pixel scale
+	display.setTextColor(WHITE); // Draw white text
+	display.setCursor(0, 0);     // Start at top-left corner
+	display.cp437(true);         // Use full 256 char 'Code Page 437' font
 
-	testdrawstyles();    // Draw 'stylized' characters
-	delay(2000);
+	display.println(F("PEKA HW Monitor"));
 	
-	testscrolltext();    // Draw scrolling text
-	delay(2000);
-
-	// // Show initial display buffer contents on the screen --
-	// // the library initializes this with an Adafruit splash screen.
-	// display.display();
-	// delay(2000); // Pause for 2 seconds
-
-	// Serial.printf("SSD1306 started OK with screen %dx%d\r\n",display.width(), display.height());
-
-	// display.clearDisplay();
-	
-	// display.drawRect(
-	// 	0,
-	// 	0,
-	// 	display.width(),
-	// 	display.height(),
-	// 	WHITE );
-	// display.display();
-	// display.setTextSize( 1 );
-	
-	// display.setCursor( 2, 0);
-	// display.println("Witajcie");
-	
-	// display.setCursor( 2, 1);
-	// display.print("Witajcie");
-
-	// display.setCursor( 2, 2);
-	// display.printf("Witajcie");
-
-	// display.setCursor( 2, 4);
-	// display.printf_P("Witajcie");
-	
-	// display.display();
-	
-	// // display.setCursor(5, 5); 
-	// // display.setCursor(5, 6);
-	// // display.print("start...");
-	// Serial.printf("SSD should display hello world now");
-	// // display.display();
-	// delay(2000); // Pause for 2 seconds
+  display.display();
 }
 
 void displaySetupDone() {
 	displayCleanup();
 
-	display.setCursor(5, 5);
+	display.setCursor(0, 0);
 	display.println("Setup");
-	display.setCursor(5, 6);
+	display.setCursor(20, 6);
 	display.println("  done.");
 	
 	display.display();
