@@ -13,6 +13,7 @@
 const int displayLinesCount = 6; // how many lines of text fits on display
 const int lineHeight = 10;
 const int directionShortSize = 12;
+const int linePaddedSize = 5;
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -98,14 +99,18 @@ void displayResponse(JsonDocument& response) {
         Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
             realTime ? "" : " [wg rozkladu]");
 		// display deaparture time details on display
-		if(lineNo <= displayLinesCount) {			
+		if(lineNo <= displayLinesCount) {
 			char directionShort[directionShortSize + 1]; // allowance for \0
-			char lineToDisplay[5] = { ' ', ' ', ' ', ' ', '\0' };
+			
+			char linePadded[linePaddedSize] = { ' ', ' ', ' ', ' ', '\0' }; 
+			
+			// prepare line no padded with spaces, TODO: can it be done with string format?
+			strncpy(linePadded, line, strlen(line));
+			// prepare direction shortened to predefined size, todo: padding as with line
 			strlcpy(directionShort, direction, directionShortSize);
-			strlcpy(lineToDisplay, line, directionShortSize);
 
 			display.setCursor(0, lineNo * lineHeight);
-			display.printf("%s %s: %d", line, directionShort, minutes);
+			display.printf("%s%s: %d", linePadded, directionShort, minutes);
 			display.print(realTime ? "m" : "*");
 		}
 
