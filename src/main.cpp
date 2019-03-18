@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <ESPRotary.h>
@@ -17,6 +18,7 @@ ESPRotary rotary = ESPRotary(dtPin, clkPin);
 
 // methods declarations
 void rotary_loop();
+
 
 void setupWifi() {
 	Serial.printf("\rConnecting to %s ", ssid);
