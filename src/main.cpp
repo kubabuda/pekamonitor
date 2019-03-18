@@ -8,8 +8,6 @@
 
 ESP8266WiFiMulti WiFiMulti;
 
-StaticJsonDocument<MAX_RESPONSE_SIZE> response;
-
 const int clkPin = D7;	 // CLK
 const int dtPin = D4; 	  // DT
 const int buttonPin = D3; // SW
@@ -20,6 +18,14 @@ ESPRotary rotary = ESPRotary(dtPin, clkPin);
 // methods declarations
 void rotary_loop();
 
+void setupWifi() {
+	Serial.printf("\rConnecting to %s ", ssid);
+	delay(500);
+	WiFi.mode(WIFI_STA);
+	WiFiMulti.addAP(ssid, password);	
+	Serial.println("finished");
+}
+
 
 void setup()
 {
@@ -29,11 +35,7 @@ void setup()
 
 	displaySetup();
 	
-	Serial.printf("\rConnecting to %s ", ssid);
-	delay(500);
-	WiFi.mode(WIFI_STA);
-	WiFiMulti.addAP(ssid, password);	
-	Serial.println("finished");
+	setupWifi();
 	
 	pinMode(buttonPin, INPUT);
 	attachInterrupt(digitalPinToInterrupt(buttonPin), reloadCurrentBollard, FALLING);
@@ -47,6 +49,7 @@ void setup()
 
 void loop()
 {
+	StaticJsonDocument<MAX_RESPONSE_SIZE> response;
 	String symbol = getCurrentBollard();
   	reload_state next_action = isReloadNeeded();
   	
