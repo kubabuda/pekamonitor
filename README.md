@@ -60,6 +60,7 @@ Format required by BearSSL::WiFiClientSecure is
 ```
 
 # TODO
+- finish displayResponse 
 - Find font with polish characters
 - Setup OTA, debugger
 - load realtime from external NTP service to log it: https://www.geekstips.com/arduino-time-sync-ntp-server-esp8266-udp/, https://www.pool.ntp.org/zone/pl
