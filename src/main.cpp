@@ -9,6 +9,10 @@
 
 ESP8266WiFiMulti WiFiMulti;
 
+// response is needed only in loop, but when declared there ESP threw soft reset with core dump
+StaticJsonDocument<MAX_RESPONSE_SIZE> response;
+
+
 const int clkPin = D7;	 // CLK
 const int dtPin = D4; 	  // DT
 const int buttonPin = D3; // SW
@@ -24,7 +28,7 @@ void setupWifi() {
 	Serial.printf("\rConnecting to %s ", ssid);
 	delay(500);
 	WiFi.mode(WIFI_STA);
-	WiFiMulti.addAP(ssid, password);	
+	WiFiMulti.addAP(ssid, password);
 	Serial.println("finished");
 }
 
@@ -51,7 +55,6 @@ void setup()
 
 void loop()
 {
-	StaticJsonDocument<MAX_RESPONSE_SIZE> response;
 	String symbol = getCurrentBollard();
   	reload_state next_action = isReloadNeeded();
   	
