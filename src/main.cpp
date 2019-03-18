@@ -24,7 +24,7 @@ ESPRotary rotary = ESPRotary(dtPin, clkPin);
 void rotary_loop();
 
 
-void setupWifi() {
+void loadConfiguration(JsonDocument& response) {
 	delay(500);
 	WiFi.mode(WIFI_STA);
 
@@ -57,7 +57,7 @@ void setup()
 
 	displaySetup();
 	
-	setupWifi();
+	loadConfiguration(response);
 	
 	pinMode(buttonPin, INPUT);
 	attachInterrupt(digitalPinToInterrupt(buttonPin), reloadCurrentBollard, FALLING);
