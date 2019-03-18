@@ -25,11 +25,27 @@ void rotary_loop();
 
 
 void setupWifi() {
-	Serial.printf("\rConnecting to %s ", ssid);
 	delay(500);
 	WiFi.mode(WIFI_STA);
-	WiFiMulti.addAP(ssid, password);
-	Serial.println("finished");
+
+	// reuse memory allocated to response object
+	DeserializationError error = deserializeJson(response, secretsJson);
+
+	if (error) {
+		Serial.println("Config deserialization failed");
+		Serial.println(error.c_str());
+		for(;;);
+	} else {
+		JsonArray times = response["networks"].as<JsonArray>();
+		
+		for(JsonVariant v : times) {
+			const char* ssid =  v["ssid"];
+			const char* password = v["password"];
+		
+			WiFiMulti.addAP(ssid, password);
+		}
+	}
+	Serial.println("Loading config finished");
 }
 
 

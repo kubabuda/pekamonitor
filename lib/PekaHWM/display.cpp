@@ -145,7 +145,7 @@ void displayResponse(JsonDocument& response) {
 
     // parse monitor header
     const char* name =  response["success"]["bollard"]["name"];
-	  const char* symbol =  response["success"]["bollard"]["symbol"];
+	const char* symbol =  response["success"]["bollard"]["symbol"];
     // parse display monitor header
   	Serial.printf("Przystanek %s\n %s", symbol, name);
 	  displayCleanup();
