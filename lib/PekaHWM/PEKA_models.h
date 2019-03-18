@@ -48,6 +48,4 @@ bollard_request_t bollards[bollardsCount] = {
   { .symbol = "RKAP71", .name = "Kaponiera->?" },
 };
 
-volatile int currentBollard = 0;
-
 #endif /* PEKA_MODELS_H */

@@ -41,16 +41,19 @@ void setLastReloadTimestamp(unsigned long last) {
 }
 
 
-// *****************  bollard symobl get, switch  *****************
+// *****************  config  *****************
 
-static volatile uint32_t prevTriggerTimestamp = 0;
-const uint32_t debounce_time_ms = 200;
-
-
+volatile int currentBollard = 0;
 
 String getCurrentBollard() {
 	return bollards[currentBollard].symbol;
 }
+
+
+// *****************  bollard symobl get, switch  *****************
+
+static volatile uint32_t prevTriggerTimestamp = 0;
+const uint32_t debounce_time_ms = 200;
 
 
 void incrementCurrentBollard(ESPRotary& r) {
