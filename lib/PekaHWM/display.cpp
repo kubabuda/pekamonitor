@@ -11,7 +11,7 @@
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
 const int displayLinesCount = 6; // how many lines of text fits on display
-const int lineHeight = 10;
+const int lineHeight = 9;
 const int directionShortSize = 12;
 const int linePaddedSize = 5;
 
