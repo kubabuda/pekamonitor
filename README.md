@@ -60,14 +60,15 @@ Format required by BearSSL::WiFiClientSecure is
 ```
 
 # TODO
-- change OLED library and display functions for larger OLED display
+- Find font with polish characters
 - Setup OTA, debugger
 - load realtime from external NTP service to log it: https://www.geekstips.com/arduino-time-sync-ntp-server-esp8266-udp/, https://www.pool.ntp.org/zone/pl
 - Create bollard monitor data structure for bollard info so parsing and displaying is decoupled, so display refresh can be faster (no waiting for parsing, serial printing...)
 - Update all bollard monitors in background so switch is instant
 - Make selected bollard persistent - store current bollard # in EEPROM
-- Feed WiFi multi with arbitrary number of password, ssid pairs
-- Store encrypted password, ssid in eeprom (SPIFFS?)
+- Read bollards from config instead of hardcoding
+- Encrypt passwords, SSIDs
+- Store encrypted password, ssid in eeprom with SPIFFS or similar solution
 - Create commandline interface to change ssids, passwords
 - setup AP with web interface to change ssids, passwords
 - Unit tests - requires paid PIO Plus - to bottom of backlog

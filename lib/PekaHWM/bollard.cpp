@@ -55,6 +55,8 @@ String getCurrentBollard() {
 
 void incrementCurrentBollard(ESPRotary& r) {
 	auto now = millis();
+
+	// HACK: rotary encoder lib 
 	
 	if (now > prevTriggerTimestamp + debounce_time_ms) {
 		prevTriggerTimestamp = now;
