@@ -56,17 +56,20 @@ String getCurrentBollard() {
 void incrementCurrentBollard(ESPRotary& r) {
 	auto now = millis();
 
-	// HACK: rotary encoder lib 
+	// HACK: rotary encoder lib returns 2 impules per move, ignore every 2nd
+	static unsigned short pulseId = 0; 
 	
 	if (now > prevTriggerTimestamp + debounce_time_ms) {
-		prevTriggerTimestamp = now;
-		wasTriggered = true;
-		
-		++currentBollard;
-		currentBollard %= bollardsCount;
+		if(pulseId++ & 0x1) { // first impulse, do not ignore
+			prevTriggerTimestamp = now;
+			wasTriggered = true;
+			
+			++currentBollard;
+			currentBollard %= bollardsCount;
 
-		Serial.printf("[%lu] Switching bollard # up to ", now);
-		Serial.println(getCurrentBollard());
+			Serial.printf("[%lu] Switching bollard # up to ", now);
+			Serial.println(getCurrentBollard());
+		}		
 	}
 }
 
