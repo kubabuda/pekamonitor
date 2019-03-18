@@ -35,17 +35,16 @@ struct PEKA_response {
 
 struct bollard_request_t {
   String symbol;
-  String name;
 } typedef bollard_request_t;
 
 // collection of boards to display
-const int bollardsCount = 4;
+const int bollardsCount = 4; // TODO rename to bollardMaxCount and implement
 
 bollard_request_t bollards[bollardsCount] = {
-  { .symbol = "SWRZ01", .name = "Świerzawska->Ławica" },
-  { .symbol = "SWRZ02", .name = "Świerzawska->Kaponiera" },
-  { .symbol = "RYCE04", .name = "Rycerska->Kaponiera" },
-  { .symbol = "RKAP71", .name = "Kaponiera->?" },
+  { .symbol = "SWRZ01", },
+  { .symbol = "SWRZ02", },
+  { .symbol = "RYCE04", },
+  { .symbol = "RKAP71", },
 };
 
 #endif /* PEKA_MODELS_H */

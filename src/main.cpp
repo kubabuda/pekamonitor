@@ -28,7 +28,6 @@ void loadConfiguration(JsonDocument& response) {
 	delay(500);
 	WiFi.mode(WIFI_STA);
 
-	// reuse memory allocated to response object
 	DeserializationError error = deserializeJson(response, secretsJson);
 
 	if (error) {
@@ -57,6 +56,8 @@ void setup()
 
 	displaySetup();
 	
+	// reuse memory allocated to response object, if it's global anyway
+	// its content will be rewritten in loop
 	loadConfiguration(response);
 	
 	pinMode(buttonPin, INPUT);
