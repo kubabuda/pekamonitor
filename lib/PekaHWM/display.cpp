@@ -107,44 +107,54 @@ void displayLoading(String symbol) {
 }
 
 
-void displayResponse(JsonDocument& response) {
-    // parse monitor header
-    const char* name =  response["success"]["bollard"]["name"];
-	const char* symbol =  response["success"]["bollard"]["symbol"];
-    // parse display monitor header
+void displayMonitorHeader(const char *name, const char* symbol) {
   	Serial.printf("Przystanek %s\n %s", symbol, name);
 	displayCleanup();
     u8g2_for_adafruit_gfx.setCursor(0, 8);
     u8g2_for_adafruit_gfx.println(name);
+}
+
+
+void displayMonitorLine(JsonVariant& time, int lineNo) {
+    const char* line = time["line"];
+    const char* direction = time["direction"];
+    int minutes = time["minutes"].as<int>();
+    bool realTime = time["realTime"].as<bool>();
+
+    // display deaparture time details on serial
+    Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
+        realTime ? "" : " [wg rozkladu]");
+    // display deaparture time details on display
+    if(lineNo <= displayLinesCount) {
+        char directionShort[directionShortSize + 1]; // allowance for \0
+        
+        char linePadded[linePaddedSize] = { ' ', ' ', ' ', ' ', '\0' }; 
+        
+        // prepare line no padded with spaces, TODO: can it be done with string format?
+        strncpy(linePadded, line, strlen(line));
+        // prepare direction shortened to predefined size, todo: padding as with line
+        strlcpy(directionShort, direction, directionShortSize);
+
+        display.setCursor(0, lineNo * lineHeight);
+        display.printf("%s%s: %d%c", linePadded, directionShort, minutes, realTime ? 'm' : '*');
+    }
+}
+
+
+void displayResponse(JsonDocument& response) {
+    // parse monitor header
+    const char* name =  response["success"]["bollard"]["name"];
+	const char* symbol =  response["success"]["bollard"]["symbol"];
+    // display monitor header
+    displayMonitorHeader(name, symbol);
 
     // iterate over departure times
     JsonArray times = response["success"]["times"].as<JsonArray>();
     int lineNo = 0;
-    for(JsonVariant v : times) {
-		// parse time properties
+    for(JsonVariant time : times) {
+		// parse time properties, TODO: to struct?
         ++lineNo;
-        const char* line = v["line"];
-        const char* direction = v["direction"];
-        int minutes = v["minutes"].as<int>();
-        bool realTime = v["realTime"].as<bool>();
-
-		// display deaparture time details on serial
-        Serial.printf(" - %s w kierunku %s za %d min%s\n", line, direction, minutes,
-            realTime ? "" : " [wg rozkladu]");
-		// display deaparture time details on display
-		if(lineNo <= displayLinesCount) {
-			char directionShort[directionShortSize + 1]; // allowance for \0
-			
-			char linePadded[linePaddedSize] = { ' ', ' ', ' ', ' ', '\0' }; 
-			
-			// prepare line no padded with spaces, TODO: can it be done with string format?
-			strncpy(linePadded, line, strlen(line));
-			// prepare direction shortened to predefined size, todo: padding as with line
-			strlcpy(directionShort, direction, directionShortSize);
-
-			display.setCursor(0, lineNo * lineHeight);
-			display.printf("%s%s: %d%c", linePadded, directionShort, minutes, realTime ? 'm' : '*');
-		}
+        displayMonitorLine(time, lineNo);
 
         yield();
     }
