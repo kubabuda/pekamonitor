@@ -1,9 +1,10 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <Wire.h>    // Include Wire for using I2C
-#include "API_connector.h"
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <U8g2_for_Adafruit_GFX.h>
+#include "API_connector.h"
 
 
 #define I2C_ADDRESS 	0x3C
@@ -18,6 +19,7 @@ const int linePaddedSize = 5;
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+U8G2_FOR_ADAFRUIT_GFX u8g2_for_adafruit_gfx;
 
 
 void displayCleanup() {
@@ -31,6 +33,36 @@ void displaySetup() {
       	Serial.println(F("SSD1306 allocation failed"));
       	for(;;); // Don't proceed, loop forever
     }
+    u8g2_for_adafruit_gfx.begin(display);                 // connect u8g2 procedures to Adafruit GFX
+
+    u8g2_for_adafruit_gfx.setFont(u8g2_font_helvB08_tf);  // select u8g2 font from here: https://github.com/olikraus/u8g2/wiki/fntlistall
+    u8g2_for_adafruit_gfx.setFontMode(1);                 // use u8g2 transparent mode (this is default)
+    u8g2_for_adafruit_gfx.setFontDirection(0);            // left to right (this is default)
+    u8g2_for_adafruit_gfx.setForegroundColor(WHITE);      // apply Adafruit GFX color
+
+    const char s[] = "gfx LCD";
+    /* width and height of the text */
+    int16_t height;
+    int16_t width;
+    /* desired position of the text */
+    int16_t x = 4;
+    int16_t y = 25;
+    display.clearDisplay();                               // clear the graphcis buffer  
+    u8g2_for_adafruit_gfx.setCursor(x, y);                // start writing at this position
+    u8g2_for_adafruit_gfx.print(s);
+    u8g2_for_adafruit_gfx.setCursor(0,50);                // start writing at this position
+    u8g2_for_adafruit_gfx.print("Zażółć gęślą jaźń");            // UTF-8 string with german umlaut chars
+    /* calculate the size of the box into which the text will fit */
+    height = u8g2_for_adafruit_gfx.getFontAscent() - u8g2_for_adafruit_gfx.getFontDescent();
+    width = u8g2_for_adafruit_gfx.getUTF8Width(s);
+
+    /* draw the box around the text*/
+    display.drawRect(x, y-u8g2_for_adafruit_gfx.getFontAscent(), width, height, WHITE);
+    display.display();                                    // make everything visible
+    delay(4000);
+
+
+
     display.clearDisplay();
 
     display.setTextColor(WHITE); // Draw white text
@@ -82,7 +114,8 @@ void displayResponse(JsonDocument& response) {
     // parse display monitor header
   	Serial.printf("Przystanek %s\n %s", symbol, name);
 	displayCleanup();
-	display.println(name);
+    u8g2_for_adafruit_gfx.setCursor(0, 8);
+    u8g2_for_adafruit_gfx.println(name);
 
     // iterate over departure times
     JsonArray times = response["success"]["times"].as<JsonArray>();
@@ -110,8 +143,7 @@ void displayResponse(JsonDocument& response) {
 			strlcpy(directionShort, direction, directionShortSize);
 
 			display.setCursor(0, lineNo * lineHeight);
-			display.printf("%s%s: %d", linePadded, directionShort, minutes);
-			display.print(realTime ? "m" : "*");
+			display.printf("%s%s: %d%c", linePadded, directionShort, minutes, realTime ? 'm' : '*');
 		}
 
         yield();
