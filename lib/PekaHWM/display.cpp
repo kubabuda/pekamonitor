@@ -37,32 +37,25 @@ void displaySetup() {
     }
     u8g2_for_adafruit_gfx.begin(display);                 // connect u8g2 procedures to Adafruit GFX
 
-    u8g2_for_adafruit_gfx.setFont(u8g2_font_helvB08_tf);  // select u8g2 font from here: https://github.com/olikraus/u8g2/wiki/fntlistall
+    // polish characters are displayed, but this font is too big!  TODO create new smaller font and make pull request
+    u8g2_for_adafruit_gfx.setFont(u8g2_font_unifont_t_polish);  // select u8g2 font from here: https://github.com/olikraus/u8g2/wiki/fntlistall
     u8g2_for_adafruit_gfx.setFontMode(1);                 // use u8g2 transparent mode (this is default)
     u8g2_for_adafruit_gfx.setFontDirection(0);            // left to right (this is default)
     u8g2_for_adafruit_gfx.setForegroundColor(WHITE);      // apply Adafruit GFX color
 
-    const char s[] = "gfx LCD";
-    /* width and height of the text */
-    int16_t height;
-    int16_t width;
-    /* desired position of the text */
-    int16_t x = 4;
-    int16_t y = 25;
+
+    /* -----------------------------------    U8G2 polish characters test START    ----------------------------------- */ 
+    const char* s = "Sprawdź polskie";
+    const char* s2 = "Zażółć gęślą jaź";
     display.clearDisplay();                               // clear the graphcis buffer  
-    u8g2_for_adafruit_gfx.setCursor(x, y);                // start writing at this position
+    u8g2_for_adafruit_gfx.setCursor(0, 14);                // start writing at this position
     u8g2_for_adafruit_gfx.print(s);
     u8g2_for_adafruit_gfx.setCursor(0,50);                // start writing at this position
-    u8g2_for_adafruit_gfx.print("Zażółć gęślą jaźń");            // UTF-8 string with german umlaut chars
-    /* calculate the size of the box into which the text will fit */
-    height = u8g2_for_adafruit_gfx.getFontAscent() - u8g2_for_adafruit_gfx.getFontDescent();
-    width = u8g2_for_adafruit_gfx.getUTF8Width(s);
+    u8g2_for_adafruit_gfx.print(s2);            // UTF-8 string with german umlaut chars
 
-    /* draw the box around the text*/
-    display.drawRect(x, y-u8g2_for_adafruit_gfx.getFontAscent(), width, height, WHITE);
     display.display();                                    // make everything visible
     delay(4000);
-
+    /* -----------------------------------    U8G2 polish characters test STOP    ----------------------------------- */ 
 
 
     display.clearDisplay();
@@ -113,6 +106,7 @@ void displayLoading(String symbol) {
 void displayMonitorHeader(const char *name, const char* symbol) {
   	Serial.printf("Przystanek %s\n %s", symbol, name);
 	displayCleanup();
+    // TODO adjust to smaller polish font when its available
     u8g2_for_adafruit_gfx.setCursor(0, 8);
     u8g2_for_adafruit_gfx.println(name);
 }
@@ -137,6 +131,7 @@ void displayMonitorLine(JsonVariant& time, int lineNo) {
         // prepare direction shortened to predefined size, todo: padding as with line
         strlcpy(directionShort, direction, directionShortSize);
 
+        // TODO use u8g2_for_adafruit_gfx when smaller polish font is available
         display.setCursor(0, lineNo * lineHeight);
         display.printf("%s%s: %d%c", linePadded, directionShort, minutes, realTime ? 'm' : '*');
     }

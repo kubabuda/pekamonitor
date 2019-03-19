@@ -26,7 +26,7 @@ int connect_dummy(String symbol, JsonDocument& response) {
 
 
 int reloadBollard(String symbol, JsonDocument& response) {
-    return connect_dummy(symbol, response); // for GUI test
+    // return connect_dummy(symbol, response); // for GUI test
     int result = -1;
     std::unique_ptr<BearSSL::WiFiClientSecure>client(new BearSSL::WiFiClientSecure);
 
