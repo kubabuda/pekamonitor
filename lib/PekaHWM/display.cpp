@@ -11,10 +11,11 @@
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
-const int displayLinesCount = 6; // how many lines of text fits on display
-const int lineHeight = 9;
-const int directionShortSize = 12;
-const int linePaddedSize = 5;
+const int displayLinesCount = 6;    // how many lines of text fits on display
+const int lineHeight = 9;           // monitor line h, in px
+const int directionShortSize = 12;  // how many characters of direction to display
+const int linePaddedSize = 5;       // tram/bus line no can be up to 3 digits
+                                    // + N symbol for night connections + \0 str end
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -26,6 +27,7 @@ void displayCleanup() {
     display.clearDisplay();
     display.setCursor(0, 0);
 }
+
 
 void displaySetup() {
 	// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -79,6 +81,7 @@ void displaySetup() {
     display.display();
 }
 
+
 void displaySetupDone() {
     displayCleanup();
     display.setTextSize(2); 
@@ -127,10 +130,9 @@ void displayMonitorLine(JsonVariant& time, int lineNo) {
     // display deaparture time details on display
     if(lineNo <= displayLinesCount) {
         char directionShort[directionShortSize + 1]; // allowance for \0
-        
         char linePadded[linePaddedSize] = { ' ', ' ', ' ', ' ', '\0' }; 
         
-        // prepare line no padded with spaces, TODO: can it be done with string format?
+        // prepare bus/tram line # padded with spaces, TODO: can it be done with string format?
         strncpy(linePadded, line, strlen(line));
         // prepare direction shortened to predefined size, todo: padding as with line
         strlcpy(directionShort, direction, directionShortSize);
