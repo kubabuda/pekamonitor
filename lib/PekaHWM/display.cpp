@@ -20,6 +20,9 @@ const int linePaddedSize = 5;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
+
+
+
 void displayCleanup() {
     display.clearDisplay();
     display.setCursor(0, 0);
@@ -75,15 +78,46 @@ void displayLoading(String symbol) {
 }
 
 
+void RemovePolishCharacters(char* buffer, const char* intake, int size) {
+
+    String input = String(intake);
+
+    input.replace("Ą", "A");
+    input.replace("Ć", "C");
+    input.replace("Ę", "E");
+    input.replace("Ł", "L");
+    input.replace("Ń", "N");
+    input.replace("Ó", "O");
+    input.replace("Ś", "S");
+    input.replace("Ź", "Z");
+    input.replace("Ż", "Z");
+
+    input.replace("ą", "a");
+    input.replace("ć", "c");
+    input.replace("ę", "e");
+    input.replace("ł", "l");
+    input.replace("ń", "n");
+    input.replace("ó", "o");
+    input.replace("ś", "s");
+    input.replace("ź", "z");
+    input.replace("ż", "z");
+
+    input.toCharArray(buffer, size);
+}
+
+
 void displayResponse(JsonDocument& response) {
     // parse monitor header
+    const int NAME_SIZE = 20;
+    char sanitized[NAME_SIZE];
     const char* name =  response["success"]["bollard"]["name"];
 	const char* symbol =  response["success"]["bollard"]["symbol"];
     // parse display monitor header
   	Serial.printf("Przystanek %s\n %s", symbol, name);
 	displayCleanup();
-	display.println(name);
-
+    RemovePolishCharacters(sanitized, name, NAME_SIZE);
+	display.println(sanitized);
+    
     // iterate over departure times
     JsonArray times = response["success"]["times"].as<JsonArray>();
     int lineNo = 0;
@@ -107,7 +141,8 @@ void displayResponse(JsonDocument& response) {
 			// prepare line no padded with spaces, TODO: can it be done with string format?
 			strncpy(linePadded, line, strlen(line));
 			// prepare direction shortened to predefined size, todo: padding as with line
-			strlcpy(directionShort, direction, directionShortSize);
+			// RemovePolishCharacters(direction);
+            strlcpy(directionShort, direction, directionShortSize);
 
 			display.setCursor(0, lineNo * lineHeight);
 			display.printf("%s%s: %d", linePadded, directionShort, minutes);
