@@ -12,14 +12,12 @@
 
 const int displayLinesCount = 6; // how many lines of text fits on display
 const int lineHeight = 9;
-const int directionShortSize = 12;
+const int SHORTENED_DIRECTION_SIZE = 14;
 const int linePaddedSize = 5;
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
-
 
 
 
@@ -78,7 +76,7 @@ void displayLoading(String symbol) {
 }
 
 
-void RemovePolishCharacters(char* buffer, const char* intake, int size) {
+void removePolishCharacters(char* buffer, const char* intake, int size) {
 
     String input = String(intake);
 
@@ -115,7 +113,7 @@ void displayResponse(JsonDocument& response) {
     // parse display monitor header
   	Serial.printf("Przystanek %s\n %s", symbol, name);
 	displayCleanup();
-    RemovePolishCharacters(sanitized, name, NAME_SIZE);
+    removePolishCharacters(sanitized, name, NAME_SIZE);
 	display.println(sanitized);
     
     // iterate over departure times
@@ -134,18 +132,23 @@ void displayResponse(JsonDocument& response) {
             realTime ? "" : " [wg rozkladu]");
 		// display deaparture time details on display
 		if(lineNo <= displayLinesCount) {
-			char directionShort[directionShortSize + 1]; // allowance for \0
+			char directionShort[SHORTENED_DIRECTION_SIZE + 1];
 			
 			char linePadded[linePaddedSize] = { ' ', ' ', ' ', ' ', '\0' }; 
 			
 			// prepare line no padded with spaces, TODO: can it be done with string format?
 			strncpy(linePadded, line, strlen(line));
-			// prepare direction shortened to predefined size, todo: padding as with line
-			// RemovePolishCharacters(direction);
-            strlcpy(directionShort, direction, directionShortSize);
+            removePolishCharacters(sanitized, direction, NAME_SIZE);
+			// prepare direction shortened to predefined size,
+            strlcpy(directionShort, sanitized, SHORTENED_DIRECTION_SIZE);
+            
+            for(int i = strlen(directionShort); i < SHORTENED_DIRECTION_SIZE - 1; ++i) {
+                directionShort[i] = ' ';     // padding with spaces
+            }
+            directionShort[SHORTENED_DIRECTION_SIZE - 1] = '\0';
 
 			display.setCursor(0, lineNo * lineHeight);
-			display.printf("%s%s: %d", linePadded, directionShort, minutes);
+			display.printf("%s%s %d", linePadded, directionShort, minutes);
 			display.print(realTime ? "m" : "*");
 		}
 
